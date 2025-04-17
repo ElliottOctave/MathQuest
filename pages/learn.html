@@ -1,4 +1,3 @@
-<!-- learn.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,37 +5,140 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Learn - MathQuest</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="styles/style.css">
   <link rel="stylesheet" href="styles/mathQuest.css">
+  <style>
+    .subject-card {
+      background-color: #f9fafc;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transition: transform 0.2s ease;
+      height: 100%;
+    }
+
+    .subject-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .subject-icon {
+      font-size: 2.5rem;
+      color: #4dabf7;
+    }
+
+    .section-title {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .btn-topic {
+      margin: 5px;
+      border-radius: 12px;
+      font-size: 1rem;
+    }
+
+    main {
+      background-color: #f0f4f9;
+    }
+
+    .learn-wrapper {
+      padding-top: 50px;
+      padding-bottom: 50px;
+    }
+
+    @media (max-width: 768px) {
+      .subject-icon {
+        font-size: 2rem;
+      }
+    }
+  </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="index.html">MathQuest</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-              <li class="nav-item"><a class="nav-link" href="learn.html">Learn</a></li>
-              <li class="nav-item"><a class="nav-link" href="rewards.html">Rewards</a></li>
-              <li class="nav-item"><a class="nav-link" href="#">Register</a></li>
-              <li class="nav-item"><a class="nav-link" href="#">Login</a></li>
-            </ul>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="index.html">MathQuest</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="learn.html">Learn</a></li>
+          <li class="nav-item"><a class="nav-link" href="rewards.html">Rewards</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Register</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="learn-wrapper container">
+    <h2 class="text-center mb-5 text-primary">Explore Math Adventures</h2>
+
+    <div class="row g-4">
+      <!-- Algebra & Operations -->
+      <div class="col-md-6">
+        <div class="subject-card h-100">
+          <div class="subject-icon mb-3"><i class="fas fa-calculator"></i></div>
+          <h4 class="section-title">Algebra & Operations</h4>
+          <p>Build foundational skills in addition, subtraction, and problem-solving.</p>
+          <div>
+            <a href="#" class="btn btn-outline-primary btn-topic">Addition Adventure</a>
+            <a href="#" class="btn btn-outline-secondary btn-topic">Subtraction Safari</a>
+            <a href="#" class="btn btn-outline-info btn-topic">Word Problems</a>
+            <a href="#" class="btn btn-outline-dark btn-topic">Equation Builder</a>
           </div>
         </div>
-      </nav>
+      </div>
 
-  <section class="container py-5">
-    <h2 class="text-center mb-4">Choose a Math Topic</h2>
-    <div class="row g-4">
-      <div class="col-md-4"><button class="btn btn-outline-primary w-100">Addition</button></div>
-      <div class="col-md-4"><button class="btn btn-outline-success w-100">Subtraction</button></div>
-      <div class="col-md-4"><button class="btn btn-outline-warning w-100">Shapes</button></div>
-      <div class="col-md-4"><button class="btn btn-outline-info w-100">Counting</button></div>
-      <div class="col-md-4"><button class="btn btn-outline-danger w-100">Measurement</button></div>
+      <!-- Base Ten & Number Sense -->
+      <div class="col-md-6">
+        <div class="subject-card h-100">
+          <div class="subject-icon mb-3"><i class="fas fa-sort-numeric-up-alt"></i></div>
+          <h4 class="section-title">Number Sense & Place Value</h4>
+          <p>Count, compare, and understand numbers all the way to 120.</p>
+          <div>
+            <a href="#" class="btn btn-outline-primary btn-topic">Count to 120</a>
+            <a href="#" class="btn btn-outline-success btn-topic">Place Value Party</a>
+            <a href="#" class="btn btn-outline-warning btn-topic">Tens & Ones</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Measurement & Data -->
+      <div class="col-md-6">
+        <div class="subject-card h-100">
+          <div class="subject-icon mb-3"><i class="fas fa-ruler-horizontal"></i></div>
+          <h4 class="section-title">Measurement & Time</h4>
+          <p>Use real-life tools to measure, tell time, and understand data.</p>
+          <div>
+            <a href="#" class="btn btn-outline-primary btn-topic">Length Challenge</a>
+            <a href="#" class="btn btn-outline-info btn-topic">Tell the Time</a>
+            <a href="#" class="btn btn-outline-success btn-topic">Data Detective</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Geometry -->
+      <div class="col-md-6">
+        <div class="subject-card h-100">
+          <div class="subject-icon mb-3"><i class="fas fa-shapes"></i></div>
+          <h4 class="section-title">Shapes & Geometry</h4>
+          <p>Identify, build, and play with 2D and 3D shapes with hands-on tools.</p>
+          <div>
+            <a href="#" class="btn btn-outline-danger btn-topic">Shape Sorter</a>
+            <a href="#" class="btn btn-outline-secondary btn-topic">Build a Shape</a>
+            <a href="#" class="btn btn-outline-dark btn-topic">Fractions & Pieces</a>
+          </div>
+        </div>
+      </div>
     </div>
-  </section>
+  </main>
+
+  <footer class="bg-dark text-white text-center py-3">
+    <p>&copy; 2025 MathQuest. All rights reserved.</p>
+  </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

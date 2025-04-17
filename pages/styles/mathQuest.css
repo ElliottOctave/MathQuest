@@ -1,11 +1,116 @@
-nav{
-    height: 10%;
+/* mathQuest.css */
+
+/* Use a fun font for headers */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
+body {
+  background-color: #fef6e4;
+  font-family: 'Comic Sans MS', 'Fredoka One', cursive, sans-serif;
 }
 
-main{
-    height: 85%;
+/* Navbar in vibrant colors */
+.navbar {
+  background-color: #ff6b6b !important;
 }
 
-footer{
-    height: 5%;
+.navbar-brand {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.navbar .nav-link {
+  color: #fff !important;
+}
+
+.navbar .nav-link:hover {
+  color: #ffe066 !important;
+}
+
+/* Hero section */
+.hero {
+  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2)),
+              url('../assets/background.avif') center/cover;
+  color: #fff;
+  font-family: 'Fredoka One', cursive;
+}
+
+.hero h1 {
+  font-size: 3.5rem;
+}
+
+.hero p {
+  font-size: 1.3rem;
+  color: #ffe066;
+}
+
+/* Features with cartoon icons */
+.features h3 {
+  font-size: 1.5rem;
+  color: #4dabf7;
+}
+
+.features p {
+  font-size: 1.1rem;
+  color: #555;
+}
+
+/* Buttons with fun colors */
+button.btn {
+  font-size: 1.2rem;
+  border-radius: 20px;
+  transition: transform 0.3s ease;
+}
+
+button.btn:hover {
+  transform: scale(1.05);
+}
+
+/* Cards for rewards */
+.card {
+  border-radius: 20px;
+  background: #fff9db;
+  border: 2px dashed #f6c90e;
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+/* Modals */
+.modal-content {
+  border-radius: 20px;
+  background-color: #fff3cd;
+}
+
+/* Footer */
+footer {
+  background-color: #343a40;
+  font-size: 0.9rem;
+}
+
+/* Topic Buttons in Learn Page */
+.learn-section button {
+  padding: 15px;
+  font-size: 1.3rem;
+  font-weight: bold;
+  background-color: #e0f7fa;
+  border: 3px solid #4dd0e1;
+  color: #00796b;
+  border-radius: 15px;
+}
+
+.learn-section button:hover {
+  background-color: #b2ebf2;
+}
+
+/* Responsive fix for smaller screens */
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero p {
+    font-size: 1rem;
+  }
 }
