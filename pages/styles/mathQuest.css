@@ -26,6 +26,10 @@ body {
   color: #ffe066 !important;
 }
 
+main {
+    min-height: 85vh;
+}
+
 /* Hero section */
 .hero {
   background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2)),
