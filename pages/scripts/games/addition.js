@@ -23,8 +23,8 @@ function generateQuestion() {
 
 function generateFruits(n, type) {
   const fruitURL = type === 'apple'
-    ? '../assets/apple.webp'
-    : '../assets/berry.png';
+    ? '../assets/addition/apple.webp'
+    : '../assets/addition/berry.png';
 
   let icons = '';
   for (let i = 0; i < n; i++) {
