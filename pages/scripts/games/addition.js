@@ -92,8 +92,9 @@ function submitAnswer() {
       setTimeout(() => {
         const winModal = new bootstrap.Modal(document.getElementById('winModal'));
         winModal.show();
-      }, 1000); // delay so the last progress shows nicely
-    }
+        launchConfetti();
+      }, 1000);
+    }    
     
     setTimeout(generateQuestion, 1500);
   } else {
@@ -124,4 +125,31 @@ function readStory() {
   utterance.pitch = 1;
 
   synth.speak(utterance);
+}
+
+function launchConfetti() {
+  // Burst-style confetti
+  const duration = 2 * 1000;
+  const end = Date.now() + duration;
+
+  (function frame() {
+    confetti({
+      particleCount: 7,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0 },
+      colors: ['#ff6b6b', '#ffe066', '#6bcB77']
+    });
+    confetti({
+      particleCount: 7,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1 },
+      colors: ['#4dabf7', '#ffcccb', '#f39c12']
+    });
+
+    if (Date.now() < end) {
+      requestAnimationFrame(frame);
+    }
+  })();
 }
