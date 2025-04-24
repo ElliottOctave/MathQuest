@@ -1,97 +1,126 @@
-let num1, num2;
 let difficulty = 1;
-let streak = 0;
 let progress = 0;
-let synth = window.speechSynthesis;
+let fruitArray = [];
+let numToSteal = 0;
+const synth = window.speechSynthesis;
 
 function generateQuestion() {
-  let max;
-  switch (difficulty) {
-    case 1: max = 5; break;
-    case 2: max = 10; break;
-    case 3: max = 20; break;
-    default: max = 5;
+  const max = difficulty === 1 ? 5 : difficulty === 2 ? 10 : 20;
+  const totalFruits = Math.floor(Math.random() * (max - 1)) + 2; // min 2
+  numToSteal = Math.floor(Math.random() * (totalFruits - 1)) + 1;
+
+  // Reset UI
+  document.getElementById("answer").value = "";
+  document.getElementById("feedback").textContent = "";
+  document.getElementById("afterBasket").style.visibility = "hidden";
+  document.getElementById("beforeBasket").innerHTML = "";
+  document.getElementById("afterBasket").innerHTML = "";
+
+  // Generate random fruit mix (banana & mango)
+  fruitArray = [];
+  for (let i = 0; i < totalFruits; i++) {
+    const type = Math.random() < 0.5 ? "banana" : "mango";
+    fruitArray.push(type);
   }
 
-  num1 = Math.floor(Math.random() * (max + 1));
-  num2 = Math.floor(Math.random() * (num1 + 1)); // ensure num2 <= num1
+  // Show full basket before
+  const beforeBasket = document.getElementById("beforeBasket");
+  fruitArray.forEach(type => {
+    beforeBasket.appendChild(createFruitIcon(type));
+  });
 
-  document.getElementById('answer').value = '';
-  document.getElementById('feedback').textContent = '';
+  animateMonkey(() => {
+    // Remove `numToSteal` fruits randomly
+    const remainingFruits = [...fruitArray];
+    for (let i = 0; i < numToSteal; i++) {
+      const indexToRemove = Math.floor(Math.random() * remainingFruits.length);
+      remainingFruits.splice(indexToRemove, 1);
+    }
 
-  document.getElementById('visual-num1').innerHTML = generateFruits(num1, 'banana');
-  document.getElementById('visual-num2').innerHTML = generateFruits(num2, 'mango', true);
+    // Show remaining fruits
+    const afterBasket = document.getElementById("afterBasket");
+    remainingFruits.forEach(type => {
+      afterBasket.appendChild(createFruitIcon(type));
+    });
+    afterBasket.style.visibility = "visible";
+  });
 }
 
-function generateFruits(n, type, fade = false) {
-  const fruitURL = type === 'banana'
-    ? '../assets/subtraction/banana.webp'
-    : '../assets/subtraction/mango.webp';
+function createFruitIcon(type) {
+  const img = document.createElement("img");
+  img.src = `../assets/subtraction/${type}.webp`;
+  img.alt = type;
+  img.width = 30;
+  img.style.margin = "3px";
+  return img;
+}
 
-  let icons = '';
-  for (let i = 0; i < n; i++) {
-    icons += `<img src="${fruitURL}" alt="${type}" width="30" style="margin: 3px; ${fade ? 'opacity: 0.3;' : ''}">`;
-  }
-  return icons || '<span style="color:#ccc;">0</span>';
+function animateMonkey(callback) {
+  const monkey = document.getElementById("monkey");
+  monkey.classList.remove("walk");
+  monkey.style.left = "-100px";
+  monkey.style.opacity = "1";
+
+  void monkey.offsetWidth; // force reflow
+  monkey.classList.add("walk");
+
+  setTimeout(() => {
+    if (callback) callback();
+  }, 2000); // 2s animation
 }
 
 function submitAnswer() {
-  const userInput = document.getElementById('answer').value;
-  const feedback = document.getElementById('feedback');
+  const input = document.getElementById("answer").value;
+  const feedback = document.getElementById("feedback");
 
-  if (userInput === '') {
-    feedback.textContent = 'Please enter an answer.';
-    feedback.className = 'incorrect';
+  if (input === "") {
+    feedback.textContent = "Please enter your answer.";
+    feedback.className = "incorrect";
     return;
   }
 
-  const userAnswer = parseInt(userInput);
-  const correctAnswer = num1 - num2;
-
-  if (userAnswer === correctAnswer) {
-    feedback.innerHTML = `✅ Great job! ${num1} − ${num2} = ${correctAnswer}`;
-    feedback.className = 'correct';
+  if (parseInt(input) === numToSteal) {
+    feedback.innerHTML = `✅ Correct! The monkey took ${numToSteal} fruits.`;
+    feedback.className = "correct";
     progress += 20;
-    document.getElementById('progressBar').style.width = `${progress}%`;
+    document.getElementById("progressBar").style.width = `${progress}%`;
 
     if (progress >= 100) {
       setTimeout(() => {
-        const winModal = new bootstrap.Modal(document.getElementById('winModal'));
-        winModal.show();
+        const win = new bootstrap.Modal(document.getElementById("winModal"));
+        win.show();
         launchConfetti();
-      }, 1000);
+      }, 500);
     }
 
     setTimeout(generateQuestion, 1500);
   } else {
-    feedback.innerHTML = `❌ Try again! Hint: ${num1} minus ${num2}`;
-    feedback.className = 'incorrect';
+    feedback.innerHTML = `❌ Oops! Try again.`;
+    feedback.className = "incorrect";
   }
-}
-
-function changeDifficulty() {
-  const selected = document.getElementById('difficultySelect').value;
-  difficulty = parseInt(selected);
-  streak = 0;
-  generateQuestion();
-}
-
-function restartGame() {
-  progress = 0;
-  streak = 0;
-  difficulty = parseInt(document.getElementById('difficultySelect').value);
-  document.getElementById('progressBar').style.width = '0%';
-  generateQuestion();
 }
 
 function readStory() {
   if (synth.speaking) synth.cancel();
   const text = document.getElementById("storyText").textContent;
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'en-US';
+  utterance.lang = "en-US";
   utterance.rate = 0.9;
   utterance.pitch = 1;
   synth.speak(utterance);
+}
+
+function changeDifficulty() {
+  difficulty = parseInt(document.getElementById("difficultySelect").value);
+  progress = 0;
+  document.getElementById("progressBar").style.width = "0%";
+  generateQuestion();
+}
+
+function restartGame() {
+  progress = 0;
+  document.getElementById("progressBar").style.width = "0%";
+  generateQuestion();
 }
 
 function launchConfetti() {
@@ -100,14 +129,14 @@ function launchConfetti() {
 
   (function frame() {
     confetti({
-      particleCount: 7,
+      particleCount: 10,
       angle: 60,
       spread: 55,
       origin: { x: 0 },
       colors: ['#f39c12', '#f1c40f', '#27ae60']
     });
     confetti({
-      particleCount: 7,
+      particleCount: 10,
       angle: 120,
       spread: 55,
       origin: { x: 1 },
