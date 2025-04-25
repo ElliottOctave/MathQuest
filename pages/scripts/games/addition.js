@@ -1,155 +1,40 @@
+import { setupGame } from '../template/gameTemplate.js';
+
 let num1, num2;
-let difficulty = 1;
-let streak = 0;
 
-function generateQuestion() {
-  let maxSum;
-  switch (difficulty) {
-    case 1: maxSum = 5; break;
-    case 2: maxSum = 10; break;
-    case 3: maxSum = 20; break;
-    default: maxSum = 5;
-  }
-
-  num1 = Math.floor(Math.random() * (maxSum + 1));
-  num2 = Math.floor(Math.random() * (maxSum - num1 + 1));
-
-  document.getElementById('answer').value = '';
-  document.getElementById('feedback').textContent = '';
-
-  document.getElementById('visual-num1').innerHTML = generateFruits(num1, 'apple');
-  document.getElementById('visual-num2').innerHTML = generateFruits(num2, 'berry');
+function generateQuestion(difficulty) {
+  const max = difficulty === 1 ? 5 : difficulty === 2 ? 10 : 20;
+  num1 = Math.floor(Math.random() * (max + 1));
+  num2 = Math.floor(Math.random() * (max - num1 + 1));
+  document.getElementById("visual-num1").innerHTML = renderFruits(num1, "apple.webp");
+  document.getElementById("visual-num2").innerHTML = renderFruits(num2, "berry.png");
 }
 
-function generateFruits(n, type) {
-  const fruitURL = type === 'apple'
-    ? '../assets/addition/apple.webp'
-    : '../assets/addition/berry.png';
-
-  let icons = '';
-  for (let i = 0; i < n; i++) {
-    icons += `<img src="${fruitURL}" alt="${type}" width="30" style="margin: 3px;">`;
-  }
-  return icons || '<span style="color:#ccc;">0</span>';
+function renderFruits(n, type) {
+  const src = `../assets/addition/${type}`;
+  return Array(n).fill(`<img src="${src}" width="30" style="margin: 3px;">`).join('');
 }
 
-function submitAnswer() {
-  const userInput = document.getElementById('answer').value;
-  const feedback = document.getElementById('feedback');
-
-  if (userInput === '') {
-    feedback.textContent = 'Please enter an answer.';
-    feedback.className = 'incorrect';
-    return;
-  }
-
-  const userAnswer = parseInt(userInput);
+function checkAnswer(userInput) {
   const correctAnswer = num1 + num2;
-
-  if (userAnswer === correctAnswer) {
-    feedback.textContent = `✅ Correct! ${num1} + ${num2} = ${correctAnswer}`;
-    feedback.className = 'correct';
-    streak++;
-  } else {
-    feedback.textContent = `❌ Oops! The correct answer was ${correctAnswer}`;
-    feedback.className = 'incorrect';
-    streak = 0;
-  }
-
-  setTimeout(generateQuestion, 2000);
+  return { correct: userInput === correctAnswer, correctAnswer };
 }
 
-function changeDifficulty() {
-  const selected = document.getElementById('difficultySelect').value;
-  difficulty = parseInt(selected);
-  streak = 0;
-  generateQuestion();
+function feedback(correct, answer) {
+  return correct
+    ? `✅ Great job!`
+    : `❌ Oops! Try again.`;
 }
 
-window.onload = generateQuestion;
+const game = setupGame({
+  generateQuestionFn: generateQuestion,
+  checkAnswerFn: checkAnswer,
+  getFeedbackMessageFn: feedback
+});
 
-let progress = 0;
+window.readStory = game.readStory;
+window.changeDifficulty = game.changeDifficulty;
+window.submitAnswer = game.submitAnswer;
+window.restartGame = game.restartGame;
 
-function submitAnswer() {
-  const userInput = document.getElementById('answer').value;
-  const feedback = document.getElementById('feedback');
-
-  if (userInput === '') {
-    feedback.textContent = 'Please enter an answer.';
-    feedback.className = 'incorrect';
-    return;
-  }
-
-  const userAnswer = parseInt(userInput);
-  const correctAnswer = num1 + num2;
-
-  if (userAnswer === correctAnswer) {
-    feedback.innerHTML = `<span class="correct">✅ Great job! ${num1} + ${num2} = ${correctAnswer}</span>`;
-    progress += 20; // 5 correct = 100%
-    document.getElementById('progressBar').style.width = `${progress}%`;
-
-    if (progress >= 100) {
-      setTimeout(() => {
-        const winModal = new bootstrap.Modal(document.getElementById('winModal'));
-        winModal.show();
-        launchConfetti();
-      }, 1000);
-    }    
-    
-    setTimeout(generateQuestion, 1500);
-  } else {
-    feedback.innerHTML = `<span class="incorrect">❌ Try again! Hint: count the blocks</span>`;
-  }
-}
-
-function restartGame() {
-  progress = 0;
-  streak = 0;
-  difficulty = parseInt(document.getElementById('difficultySelect').value);
-  document.getElementById('progressBar').style.width = '0%';
-  generateQuestion();
-}
-
-let synth = window.speechSynthesis;
-
-function readStory() {
-  if (synth.speaking) {
-    synth.cancel(); // Stop previous speech if still talking
-  }
-
-  const text = document.getElementById("storyText").textContent;
-
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'en-US';
-  utterance.rate = 0.9;
-  utterance.pitch = 1;
-
-  synth.speak(utterance);
-}
-
-function launchConfetti() {
-  // Burst-style confetti
-  const duration = 2 * 1000;
-  const end = Date.now() + duration;
-
-  (function frame() {
-    confetti({
-      particleCount: 7,
-      angle: 60,
-      spread: 55,
-      origin: { x: 0 },
-      colors: ['#ff6b6b', '#ffe066', '#6bcB77']
-    });
-    confetti({
-      particleCount: 7,
-      angle: 120,
-      spread: 55,
-      origin: { x: 1 },
-      colors: ['#4dabf7', '#ffcccb', '#f39c12']
-    });
-
-    if (Date.now() < end) {
-      requestAnimationFrame(frame);
-    }
-  })();
-}
+window.onload = () => generateQuestion(1);
