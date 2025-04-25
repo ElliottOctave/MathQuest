@@ -1,0 +1,120 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MathQuest</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="pages/styles/style.css">
+  <link rel="stylesheet" href="pages/styles/mathQuest.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="index.html">MathQuest</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="learn.html">Learn</a></li>
+          <li class="nav-item"><a class="nav-link" href="rewards.html">Rewards</a></li>
+          <li class="nav-item" id="loginNav"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Register</a></li>
+          <li class="nav-item" id="registerNav"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a></li>
+          <li class="nav-item" id="profileNav"><a class="nav-link" href="index.html">Profile</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+<main>
+    <header class="hero text-white text-center py-5">
+        <div class="container">
+        <h1 class="display-4">Welcome to MathQuest</h1>
+        <p class="lead">A personalized learning adventure designed for first-grade heroes!</p>
+        </div>
+    </header>
+
+    <section class="features text-center py-5">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-md-4">
+            <img src="../pages/assets/reading-book.png" alt="Adaptive" width="80">
+            <h3>Adaptive Learning</h3>
+            <p>Exercises that grow with your brain power!</p>
+          </div>
+          <div class="col-md-4">
+            <img src="../pages/assets/game-console.png" alt="Gamified" width="80">
+            <h3>Gamified Progress</h3>
+            <p>Earn stars, badges and unlock cool games!</p>
+          </div>
+          <div class="col-md-4">
+            <img src="../pages/assets/responsive.png" alt="Devices" width="80">
+            <h3>Multi-Platform</h3>
+            <p>Play anywhere — tablet, PC or VR headset!</p>
+          </div>
+        </div>
+      </div>
+    </section>    
+</main>
+
+<!-- Register Modal -->
+<div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="registerModalLabel">Register</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="registerEmail" class="form-label">Email address</label>
+              <input type="email" class="form-control" id="registerEmail" required>
+            </div>
+            <div class="mb-3">
+              <label for="registerPassword" class="form-label">Password</label>
+              <input type="password" class="form-control" id="registerPassword" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Create Account</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="loginModalLabel">Login</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="loginEmail" class="form-label">Email address</label>
+              <input type="email" class="form-control" id="loginEmail" required>
+            </div>
+            <div class="mb-3">
+              <label for="loginPassword" class="form-label">Password</label>
+              <input type="password" class="form-control" id="loginPassword" required>
+            </div>
+            <button type="submit" class="btn btn-success w-100">Login</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-dark text-white text-center py-3">
+    <p>&copy; 2025 MathQuest. All rights reserved.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="pages/scripts/script.js"></script>
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="auth.js"></script>
+</body>
+</html>
