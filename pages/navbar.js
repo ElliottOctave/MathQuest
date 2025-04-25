@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!user) {
         console.log("User is not logged in");
       userNav.innerHTML = `
+      <a href="#" class="nav-link" id="registerTrigger">Register</a>
         <a href="#" class="nav-link" id="loginTrigger">Login</a>
       `;
 
@@ -18,8 +19,14 @@ document.addEventListener('DOMContentLoaded', () => {
         loginModal.show();
       });
 
+      document.getElementById("registerTrigger").addEventListener("click", e => {
+        e.preventDefault();
+        const registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
+        registerModal.show();
+      });
+
     } else {
-        console.log("User is logged in", user.email);
+        console.log("User is logged in", user.username || user.email);
       const userRef = doc(db, "users", user.uid);
       const userSnap = await getDoc(userRef);
       const userData = userSnap.data();
@@ -62,3 +69,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
+
+// Switch between login and register modals
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('switchToRegister')?.addEventListener('click', () => {
+      bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
+      new bootstrap.Modal(document.getElementById('registerModal')).show();
+    });
+  
+    document.getElementById('switchToLogin')?.addEventListener('click', () => {
+      bootstrap.Modal.getInstance(document.getElementById('registerModal')).hide();
+      new bootstrap.Modal(document.getElementById('loginModal')).show();
+    });
+  });
+  
