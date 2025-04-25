@@ -1,13 +1,14 @@
 // auth.js
 
 import { auth, db } from './firebase.js';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { doc, setDoc, getDoc, updateDoc  } from "firebase/firestore";
 
 // Handle Registration
 export async function handleRegister(event) {
   event.preventDefault();
 
+  const username = document.getElementById('registerUsername').value;
   const email = document.getElementById('registerEmail').value;
   const password = document.getElementById('registerPassword').value;
 
@@ -17,8 +18,11 @@ export async function handleRegister(event) {
 
     // Create user document with default level 1
     await setDoc(doc(db, 'users', uid), {
+      username: username,
       email: email,
-      level: 1
+      level: 1,
+      coins: 0,
+      experience: 0,
     });
 
     alert('Registration successful! You can now log in.');
@@ -69,28 +73,6 @@ async function updateUserLevel(newLevel) {
       level: newLevel
     });
   }
-
-
-  document.addEventListener('DOMContentLoaded', () => {
-    const loginNav = document.getElementById('loginNav');
-    const registerNav = document.getElementById('registerNav');
-    const profileNav = document.getElementById('profileNav');  
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        console.log('User is logged in:', user.uid);
-        // User is logged in
-        if (loginNav) loginNav.style.display = 'none';
-        if (registerNav) registerNav.style.display = 'none';
-        if (profileNav) profileNav.style.display = 'block';
-      } else {
-        // User is NOT logged in
-        console.log('No user is logged in');
-        if (loginNav) loginNav.style.display = 'block';
-        if (registerNav) registerNav.style.display = 'block';
-        if (profileNav) profileNav.style.display = 'none';
-      }
-    });
-  });
   
 
 // Attach event listeners once DOM is ready
