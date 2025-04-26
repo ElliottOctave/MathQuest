@@ -23,8 +23,8 @@ export async function handleRegister(event) {
       level: 1,
       coins: 0,
       experience: 0,
-      time_game1: 0,
-      winrate_game1: 0
+      time_game1: [0, 0, 0, 0, 0],
+      retryFrequency_game1: [0, 0, 0, 0, 0]
     });
 
     alert('Registration successful! You can now log in.');
