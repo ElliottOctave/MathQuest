@@ -70,7 +70,8 @@ const game = setupGame({
   generateQuestionFn: generateQuestion,
   checkAnswerFn: checkAnswer,
   getFeedbackMessageFn: getFeedbackMessage,
-  confettiColors: ['#f39c12', '#f1c40f', '#27ae60']
+  confettiColors: ['#f39c12', '#f1c40f', '#27ae60'],
+  gameId: "game2" // 👈 dynamic tracking enabled here
 });
 
 window.readStory = game.readStory;
