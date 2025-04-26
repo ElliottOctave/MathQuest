@@ -1,9 +1,12 @@
 // scripts/template/gameTemplate.js
+let startTime;
+let mistakes;
 
 export function setupGame({
   generateQuestionFn,
   checkAnswerFn,
   getFeedbackMessageFn,
+  gameId,
   readStoryTextId = "storyText",
   answerInputId = "answer",
   feedbackId = "feedback",
@@ -13,6 +16,8 @@ export function setupGame({
 }) {
   let difficulty = 1;
   let progress = 0;
+  startTime = Date.now();
+  mistakes = 0;
   const synth = window.speechSynthesis;
 
   function readStory() {
@@ -30,6 +35,8 @@ export function setupGame({
     progress = 0;
     document.getElementById(progressBarId).style.width = "0%";
     generateQuestionFn(difficulty);
+    startTime = Date.now();
+    mistakes = 0;
   }
 
   function submitAnswer() {
@@ -48,6 +55,9 @@ export function setupGame({
           const win = new bootstrap.Modal(document.getElementById(winModalId));
           win.show();
           launchConfetti();
+          if (gameId) {
+            updatePerformance(gameId);
+          }
         }, 500);
       }
 
@@ -55,11 +65,14 @@ export function setupGame({
     } else {
       feedback.innerHTML = getFeedbackMessageFn(false, result.correctAnswer);
       feedback.className = "incorrect";
+      mistakes += 1;
     }
   }
 
   function restartGame() {
     progress = 0;
+    startTime = Date.now();
+    mistakes = 0;
     document.getElementById(progressBarId).style.width = "0%";
     generateQuestionFn(difficulty);
   }
@@ -96,4 +109,47 @@ export function setupGame({
     submitAnswer,
     restartGame
   };
+}
+
+import { auth, db } from "../../../firebase.js"; 
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+
+async function updatePerformance(gameId) {
+  if (!auth.currentUser) return;
+
+  const userRef = doc(db, "users", auth.currentUser.uid);
+  const userSnap = await getDoc(userRef);
+
+  if (!userSnap.exists()) return;
+
+  const userData = userSnap.data();
+
+  const timeField = `time_${gameId}`;
+  const retryField = `retryFrequency_${gameId}`;
+
+  const endTime = Date.now();
+  console.log("Start time:", startTime);
+  const timeTaken = Math.floor((endTime - startTime) / 1000);
+
+  console.log("🎯 Game Finished!");
+  console.log(`🕒 Time taken: ${timeTaken} seconds`);
+  console.log(`❌ Mistakes made: ${mistakes}`);
+
+  const newTimeStack = [...(userData[timeField] || []), timeTaken];
+  const newRetryStack = [...(userData[retryField] || []), mistakes];
+
+  const trimmedTimeStack = newTimeStack.slice(-5);
+  const trimmedRetryStack = newRetryStack.slice(-5);
+
+  console.log(`🗂️ Previous Times: ${userData[timeField] || []}`);
+  console.log(`🗂️ Previous Retries: ${userData[retryField] || []}`);
+  console.log(`📥 New Times: ${trimmedTimeStack}`);
+  console.log(`📥 New Retries: ${trimmedRetryStack}`);
+
+  await updateDoc(userRef, {
+    [timeField]: trimmedTimeStack,
+    [retryField]: trimmedRetryStack
+  });
+
+  console.log("✅ Game stats updated in Firestore!");
 }
