@@ -6,29 +6,15 @@
   <title>Learn - MathQuest</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="styles/style.css">
-  <link rel="stylesheet" href="styles/mathQuest.css">
+  <link rel="stylesheet" href="/pages/styles/style.css">
+  <link rel="stylesheet" href="/pages/styles/mathQuest.css">
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="home.html">MathQuest</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="learn.html">Learn</a></li>
-          <li class="nav-item"><a class="nav-link" href="rewards.html">Rewards</a></li>
-          <li class="nav-item dropdown" id="userNav">
-            <!-- filled by JS -->
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
 
-  <main class="learn-wrapper container">
+  <!-- Load header dynamically -->
+  <div id="header"></div>
+
+  <main class="learn-wrapper container mt-5">
     <h2 class="text-center mb-5 text-primary">Explore Math Adventures</h2>
 
     <div class="row g-4">
@@ -39,14 +25,14 @@
           <h4 class="section-title">Algebra & Operations</h4>
           <p>Build foundational skills in addition, subtraction, and problem-solving.</p>
           <div>
-            <a href="games/addition.html" class="btn btn-outline-primary btn-topic">Addition Adventure</a>
-            <a href="games/subtraction.html" class="btn btn-outline-secondary btn-topic">Subtraction Safari</a>
-            <a href="games/equation.html" class="btn btn-outline-dark btn-topic">Equation Builder</a>
+            <a href="/pages/games/addition.html" class="btn btn-outline-primary btn-topic">Addition Adventure</a>
+            <a href="/pages/games/subtraction.html" class="btn btn-outline-secondary btn-topic">Subtraction Safari</a>
+            <a href="/pages/games/equation.html" class="btn btn-outline-dark btn-topic">Equation Builder</a>
           </div>
         </div>
       </div>
 
-      <!-- Base Ten & Number Sense -->
+      <!-- Number Sense & Place Value -->
       <div class="col-md-6">
         <div class="subject-card h-100">
           <div class="subject-icon mb-3"><i class="fas fa-sort-numeric-up-alt"></i></div>
@@ -90,71 +76,71 @@
     </div>
   </main>
 
-  <!-- Register Modal -->
-<div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="registerModalLabel">Register</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="registerForm">
-          <div class="mb-3">
-            <label for="registerUsername" class="form-label">Username</label>
-            <input type="text" class="form-control" id="registerUsername" required>
-          </div>
-          <div class="mb-3">
-            <label for="registerEmail" class="form-label">Email address</label>
-            <input type="email" class="form-control" id="registerEmail" required>
-          </div>
-          <div class="mb-3">
-            <label for="registerPassword" class="form-label">Password</label>
-            <input type="password" class="form-control" id="registerPassword" required>
-          </div>
-          <button type="submit" class="btn btn-primary w-100">Create Account</button>
-        </form>
-        <p class="text-center mt-3">Already have an account? <a href="#" id="switchToLogin">Login here</a></p>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- Login Modal -->
-<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="loginModalLabel">Login</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form>
-          <div class="mb-3">
-            <label for="loginEmail" class="form-label">Email address</label>
-            <input type="email" class="form-control" id="loginEmail" required>
-          </div>
-          <div class="mb-3">
-            <label for="loginPassword" class="form-label">Password</label>
-            <input type="password" class="form-control" id="loginPassword" required>
-          </div>
-          <button type="submit" class="btn btn-success w-100">Login</button>
-        </form>
-        <p class="text-center mt-3">Don't have an account? <a href="#" id="switchToRegister">Register here</a></p>
+  <!-- Modals (Register + Login) -->
+  <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="registerModalLabel">Register</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="registerForm">
+            <div class="mb-3">
+              <label for="registerUsername" class="form-label">Username</label>
+              <input type="text" class="form-control" id="registerUsername" required>
+            </div>
+            <div class="mb-3">
+              <label for="registerEmail" class="form-label">Email address</label>
+              <input type="email" class="form-control" id="registerEmail" required>
+            </div>
+            <div class="mb-3">
+              <label for="registerPassword" class="form-label">Password</label>
+              <input type="password" class="form-control" id="registerPassword" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Create Account</button>
+          </form>
+          <p class="text-center mt-3">Already have an account? <a href="#" id="switchToLogin">Login here</a></p>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-  <footer class="bg-dark text-white text-center py-3">
-    <p>&copy; 2025 MathQuest. All rights reserved.</p>
-  </footer>
+  <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="loginModalLabel">Login</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="loginForm">
+            <div class="mb-3">
+              <label for="loginEmail" class="form-label">Email address</label>
+              <input type="email" class="form-control" id="loginEmail" required>
+            </div>
+            <div class="mb-3">
+              <label for="loginPassword" class="form-label">Password</label>
+              <input type="password" class="form-control" id="loginPassword" required>
+            </div>
+            <button type="submit" class="btn btn-success w-100">Login</button>
+          </form>
+          <p class="text-center mt-3">Don't have an account? <a href="#" id="switchToRegister">Register here</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <!-- Footer placeholder -->
+  <div id="footer"></div>
+
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="scripts\script.js"></script>
-  <script type="module" src="navbar.js"></script>
-  <script type="module" src="../firebase.js"></script>
-  <script type="module" src="../auth.js"></script>
+  <script src="/pages/scripts/script.js"></script>
+  <script type="module" src="/navbar.js"></script>
+  <script type="module" src="/firebase.js"></script>
+  <script type="module" src="/auth.js"></script>
+  <script src="/pages/scripts/include.js"></script>
+
 </body>
 </html>
