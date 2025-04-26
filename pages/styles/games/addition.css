@@ -1,111 +1,11 @@
+/* === styles/games/addition.css === */
+
 body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Comic Neue', sans-serif;
   background: url('../../assets/addition/forest.jpg') no-repeat center center fixed;
   background-size: cover;
-  min-height: 100vh;
-  overflow-x: hidden;
 }
 
-/* Container override to center and style the game box */
-.container {
-  background-color: rgba(255, 255, 255, 0.92);
-  padding: 2rem;
-  border-radius: 16px;
-  max-width: 600px;
-  margin: 2rem auto;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-}
-
-/* Inputs and selects on all screen sizes */
-input,
-select {
-  width: 100% !important;
-  max-width: 100%;
-}
-
-/* === General responsiveness === */
-img {
-  max-width: 100%;
-  height: auto;
-}
-
-button.btn {
-  width: 100%;
-  font-size: 1.1rem;
-  padding: 0.6rem;
-}
-
-/* === Medium screens (tablets/small laptops) === */
-@media screen and (max-width: 768px) {
-  .container {
-    padding: 1.5rem;
-    margin: 1rem;
-  }
-
-  h1.game-title {
-    font-size: 1.75rem;
-  }
-
-  .form-select,
-  .form-control {
-    font-size: 1rem;
-  }
-
-  .progress {
-    width: 85% !important;
-  }
-}
-
-/* === Small screens (phones) === */
-@media screen and (max-width: 400px) {
-  .container {
-    padding: 1rem;
-    margin: 0.5rem;
-  }
-
-  h1.game-title {
-    font-size: 1.4rem;
-    line-height: 1.3;
-    margin-bottom: 0.75rem;
-  }
-
-  #storyText {
-    font-size: 0.95rem;
-    line-height: 1.4;
-    margin-bottom: 1rem;
-  }
-
-  .form-select,
-  .form-control {
-    font-size: 0.95rem;
-    padding: 0.4rem 0.6rem;
-  }
-
-  button.btn {
-    font-size: 1rem;
-    padding: 0.5rem;
-  }
-
-  .progress {
-    width: 90% !important;
-  }
-
-  img[alt="Foxy"] {
-    width: 70px !important;
-  }
-
-  .story-block {
-    padding: 1rem !important;
-  }
-
-  .modal-content {
-    padding: 1rem !important;
-  }
-}
-
-/* Progress bar override */
+/* Progress bar (optional override for theme) */
 .progress-bar {
   background-color: #ff6b6b !important;
 }
