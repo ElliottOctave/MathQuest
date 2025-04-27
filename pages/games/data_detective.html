@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Data Detective</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../styles/mathQuest.css">
+  <link rel="stylesheet" href="../styles/games/data_detective.css">
+  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="container py-5">
+
+  <!-- Story -->
+  <div class="text-center p-4 mb-4 rounded story-block">
+    <img src="../assets/datadetective/dot.png" alt="Detective" width="100">
+    <h1 class="game-title">🔍 Data Detective 📊</h1>
+    <p id="storyText" class="story-text">
+        Detective Dot is solving mysteries with charts and graphs!<br>
+        Help him find the answers and crack the case!
+    </p>
+    <button onclick="readStory()" class="sound-btn">🔊</button>
+  </div>
+
+  <!-- Difficulty -->
+  <div class="text-center mb-4">
+    <label for="difficultySelect" class="form-label">Choose Difficulty:</label>
+    <select id="difficultySelect" class="form-select w-50 mx-auto" onchange="changeDifficulty()">
+      <option value="1">Easy (small pictogram)</option>
+      <option value="2">Medium (bar chart)</option>
+      <option value="3">Hard (trickier questions)</option>
+    </select>
+  </div>
+
+  <!-- Chart -->
+  <div class="chart-wrapper mb-4">
+    <div id="chartArea"></div>
+  </div>
+
+  <!-- Question -->
+  <div class="text-center mb-3">
+    <h4 id="questionText"></h4>
+  </div>
+
+  <!-- Choices -->
+  <div id="choices" class="text-center"></div>
+
+  <!-- Feedback -->
+  <div id="feedback" class="text-center mt-3"></div>
+
+  <!-- Progress -->
+  <div class="mt-5 text-center">
+    <p>Become a super detective!</p>
+    <div class="d-flex align-items-center justify-content-center gap-2">
+      <img src="../assets/datadetective/dot.png" alt="Detective" width="60">
+      <div class="progress w-50">
+        <div class="progress-bar bg-success" id="progressBar" style="width: 0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Win Modal -->
+  <div class="modal fade" id="winModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-center p-4">
+        <div class="modal-body">
+          <img src="../assets/datadetective/dot.png" width="100" class="mb-3">
+          <h2 class="text-success">🎉 You solved all mysteries!</h2>
+          <p class="lead">You're a real Data Detective!</p>
+          <button class="btn btn-success" onclick="restartGame()" data-bs-dismiss="modal">Play Again</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../scripts/games/data_detective.js"></script>
+
+</body>
+</html>

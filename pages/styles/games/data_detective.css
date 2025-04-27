@@ -1,0 +1,122 @@
+body {
+    background: url('../../assets/datadetective/mystery.avif') no-repeat center center fixed;
+    background-size: cover;
+    font-family: 'Comic Sans MS', cursive;
+  }
+  
+  .container {
+    background-color: rgba(255, 255, 255, 0.75);
+    border-radius: 16px;
+    border: 4px solid #6bcB77;
+    padding: 30px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  .game-title {
+    font-family: 'Luckiest Guy', cursive;
+    font-size: 2.8rem;
+    color: #6bcB77;
+    text-shadow: 2px 2px #ffe066;
+  }
+  
+  .story-block {
+    position: relative;
+  }
+  
+  .sound-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+  }
+  
+  .story-text {
+    font-size: 1.3rem;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.6;
+    color: #333;
+  }
+  
+  .correct {
+    color: #28a745;
+  }
+  
+  .incorrect {
+    color: #dc3545;
+  }
+  
+  .chart-wrapper {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* <-- CENTER everything */
+  }
+  
+  .chart-row {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+  }
+  
+  .chart-box {
+    width: 30px;
+    height: 30px;
+    background-color: #3498db;
+    margin-right: 5px;
+    border: 2px solid #555;
+    border-radius: 5px;
+  }
+  
+  .icon {
+    font-size: 28px;
+    width: 50px;
+    text-align: center;
+  }
+  
+  .number-line {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+  
+  .number-line span {
+    width: 30px;
+    text-align: center;
+    font-size: 1.2rem;
+  }
+  
+  #choices {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+  }
+  
+  .choice-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 1.2rem;
+    border-radius: 10px;
+    transition: background 0.3s;
+    cursor: pointer;
+  }
+  
+  .choice-btn:hover {
+    background-color: #2e86c1;
+  }
+  
+  .choice-btn.correct {
+    background-color: #28a745;
+  }
+  
+  .choice-btn.incorrect {
+    background-color: #e74c3c;
+  }
+  
