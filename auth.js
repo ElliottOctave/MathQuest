@@ -23,12 +23,12 @@ export async function handleRegister(event) {
       level: 1,
       coins: 0,
       experience: 0,
-      time_game1: [0, 0, 0, 0, 0],
-      retryFrequency_game1: [0, 0, 0, 0, 0],
-      time_game2: [0, 0, 0, 0, 0],
-      retryFrequency_game2: [0, 0, 0, 0, 0],
-      time_game3: [0, 0, 0, 0, 0],
-      retryFrequency_game3: [0, 0, 0, 0, 0]
+      time_game1: [],
+      retryFrequency_game1: [],
+      time_game2: [],
+      retryFrequency_game2: [],
+      time_game3: [],
+      retryFrequency_game3: []
     });
 
     alert('Registration successful! You can now log in.');

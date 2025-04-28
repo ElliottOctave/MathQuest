@@ -79,4 +79,4 @@ window.changeDifficulty = game.changeDifficulty;
 window.submitAnswer = game.submitAnswer;
 window.restartGame = game.restartGame;
 
-window.onload = () => generateQuestion(1);
+window.onload = () => changeDifficulty();
