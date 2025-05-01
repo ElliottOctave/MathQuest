@@ -1,28 +1,55 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js';
 
 function createAppleCounterPanel(scene) {
+  const text = `🍎 0`;
+
+  // Measure text to size canvas dynamically
+  const tempCanvas = document.createElement('canvas');
+  const tempCtx = tempCanvas.getContext('2d');
+  tempCtx.font = 'bold 48px Arial';
+  const textWidth = tempCtx.measureText(text).width;
+
+  const padding = 80;
+  const canvasWidth = Math.ceil((textWidth + padding) / 256) * 256;
+  const canvasHeight = 128;
+
   const canvas = document.createElement('canvas');
-  canvas.width = 512;
-  canvas.height = 128;
+  canvas.width = canvasWidth;
+  canvas.height = canvasHeight;
   const ctx = canvas.getContext('2d');
 
-  ctx.fillStyle = '#333';
-  ctx.fillRect(0, 0, 512, 128);
-  ctx.fillStyle = '#FFD700';
+  // 🟦 Soft blue background (match equation panel)
+  ctx.fillStyle = '#3A73A8'; // elegant soft blue
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // 🍎 Apple counter text
+  ctx.fillStyle = '#FFD700'; // golden yellow
   ctx.font = 'bold 48px Arial';
   ctx.textAlign = 'center';
-  ctx.fillText('🍎 0', 256, 80);
+  ctx.fillText(text, canvas.width / 2, 80);
 
   const texture = new THREE.CanvasTexture(canvas);
+  const material = new THREE.MeshBasicMaterial({
+    map: texture,
+    side: THREE.DoubleSide,
+    transparent: true
+  });
+
+  // 💡 Match panel width to canvas aspect ratio
+  const aspect = canvas.width / canvas.height;
+  const height = 0.3;
+  const width = height * aspect;
+
   const panel = new THREE.Mesh(
-    new THREE.PlaneGeometry(1.2, 0.3),
-    new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
+    new THREE.PlaneGeometry(width, height),
+    material
   );
 
-  panel.position.set(2, 2, 0); // right side
+  panel.position.set(2, 2, 0); // adjust as needed
   scene.add(panel);
 
   return { texture, ctx, panel };
+
 }
 
 function createTutorialPanel(scene, camera) {
@@ -48,8 +75,6 @@ function createTutorialPanel(scene, camera) {
   return tutorialPanel;
 }
 
-
-
   function createEquationPanel(scene) {
     const num1 = Math.floor(Math.random() * 5) + 1;
     const num2 = Math.floor(Math.random() * (10 - num1)) + 1;
@@ -68,8 +93,8 @@ function createTutorialPanel(scene, camera) {
       return str.trim();
     }
 
-    const apples1 = buildGroupedApples(1);
-    const apples2 = buildGroupedApples(0);
+    const apples1 = buildGroupedApples(num1);
+    const apples2 = buildGroupedApples(num2);
     const fullText = `${apples1} + ${apples2} = ?`;
 
     // 🔢 Dynamically measure text width
@@ -110,4 +135,45 @@ function createTutorialPanel(scene, camera) {
     return sum;
   }
 
-export {createAppleCounterPanel, createTutorialPanel, createEquationPanel}
+  function showSuccessPanel(scene, camera) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1024;
+    canvas.height = 256;
+    const ctx = canvas.getContext('2d');
+  
+    ctx.fillStyle = '#004400';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 72px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('🎉 Correct! Well done!', canvas.width / 2, canvas.height / 2 + 24);
+  
+    const texture = new THREE.CanvasTexture(canvas);
+    const material = new THREE.MeshBasicMaterial({
+      map: texture,
+      transparent: true,
+      side: THREE.DoubleSide
+    });
+  
+    const geometry = new THREE.PlaneGeometry(2.5, 0.6);
+    const panel = new THREE.Mesh(geometry, material);
+  
+    // Position 1.5m in front of camera
+    const camWorldPos = new THREE.Vector3();
+    camera.getWorldPosition(camWorldPos);
+    const camDir = new THREE.Vector3();
+    camera.getWorldDirection(camDir);
+  
+    const panelPos = camWorldPos.clone().add(camDir.multiplyScalar(1.5));
+    panel.position.copy(panelPos);
+  
+    // Rotate to face camera
+    panel.lookAt(camWorldPos);
+  
+    scene.add(panel);
+  
+    return panel;
+  }
+  
+  export { createAppleCounterPanel, createTutorialPanel, createEquationPanel, showSuccessPanel };

@@ -34,7 +34,14 @@ function onSelectStart(event) {
 
 function onSelectEnd(event) {
   const controller = event.target;
-  const { grabbedApple, fallingApples, scene } = event.data;
+  const {
+    grabbedApple,
+    fallingApples,
+    scene,
+    interactiveButtons
+  } = event.data;
+
+  let droppedApple = false;
 
   if (grabbedApple.current) {
     grabbedApple.current.userData.isFalling = true;
@@ -42,11 +49,39 @@ function onSelectEnd(event) {
       mesh: grabbedApple.current,
       velocity: new THREE.Vector3(0, 0, 0)
     });
-
     scene.attach(grabbedApple.current);
     grabbedApple.current = null;
+    droppedApple = true;
   }
+
+  // 👇 Skip button check if we just dropped an apple this frame
+  if (droppedApple) return;
+
+  // 🎯 Check for button hits
+  tempMatrix.identity().extractRotation(controller.matrixWorld);
+  raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
+  raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
+
+  const buttonHits = raycaster.intersectObjects(interactiveButtons, true);
+  console.log('🔍 Button hits:', buttonHits);
+
+  for (const hit of buttonHits) {
+    let obj = hit.object;
+  
+    // Traverse up to find parent with .onClick
+    while (obj && !obj.userData.onClick && obj.parent) {
+      obj = obj.parent;
+    }
+  
+    if (obj && obj.userData.onClick) {
+      console.log('✅ Executing button click callback on:', obj);
+      obj.userData.onClick();
+      return;
+    }
+  }
+  
 }
+
 
 function setupControllers(scene, camera, renderer, gameState) {
   raycaster = new THREE.Raycaster();
@@ -54,6 +89,8 @@ function setupControllers(scene, camera, renderer, gameState) {
 
   const controller = renderer.xr.getController(0);
   gameState.controller = controller;
+  gameState.raycaster = raycaster;
+
 
   // Use a ref-like object so `grabbedApple` is mutable
   if (!gameState.grabbedApple) gameState.grabbedApple = { current: null };

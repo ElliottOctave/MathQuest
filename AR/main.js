@@ -7,7 +7,7 @@ import { createEquationPanel, createTutorialPanel, createAppleCounterPanel } fro
 import { createBasket } from './setup/basket.js';
 import { createTreesWithApples } from './setup/trees.js';
 import { createRusticFence } from './setup/fence.js';
-
+import { createButtonTable } from './setup/buttons.js';
 import { setupControllers } from './logic/input.js';
 import { animate } from './logic/physics.js';
 
@@ -21,6 +21,7 @@ document.body.appendChild(VRButton.createButton(renderer));
 // 🧠 Shared game state
 const gameState = {
     scene,
+    camera,
     fallingApples: [],
     applesInBasket: 0,
     basket: null,
@@ -56,6 +57,10 @@ setupControllers(scene, camera, renderer, gameState);
 
 // 🎬 Animation loop
 animate(scene, camera, renderer, gameState);
+
+
+createButtonTable(scene, gameState);
+
 
 // 🪟 Handle resize
 window.addEventListener('resize', () => {
