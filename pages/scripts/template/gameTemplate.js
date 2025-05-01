@@ -14,7 +14,7 @@ export function setupGame({
   winModalId = "winModal",
   confettiColors = ['#ff6b6b', '#ffe066', '#6bcB77']
 }) {
-  let difficulty = 1;
+  let difficulty;
   let progress = 0;
   startTime = Date.now();
   mistakes = 0;
@@ -29,14 +29,14 @@ export function setupGame({
     utterance.pitch = 1;
     synth.speak(utterance);
   }
-
-  function changeDifficulty() {
-    difficulty = parseInt(document.getElementById("difficultySelect").value);
-    progress = 0;
-    document.getElementById(progressBarId).style.width = "0%";
+  
+  async function changeDifficulty() {
+    if (gameId) {
+      const newDifficulty = await calculateDifficulty(gameId);
+      console.log("New difficulty level:", newDifficulty);
+      difficulty = newDifficulty;
+    }
     generateQuestionFn(difficulty);
-    startTime = Date.now();
-    mistakes = 0;
   }
 
   function submitAnswer() {
@@ -69,11 +69,16 @@ export function setupGame({
     }
   }
 
-  function restartGame() {
+  async function restartGame() {
     progress = 0;
     startTime = Date.now();
     mistakes = 0;
     document.getElementById(progressBarId).style.width = "0%";
+    if (gameId) {
+      const newDifficulty = await calculateDifficulty(gameId);
+      console.log("New difficulty level:", newDifficulty);
+      difficulty = newDifficulty;
+    }
     generateQuestionFn(difficulty);
   }
 
@@ -113,6 +118,7 @@ export function setupGame({
 
 import { auth, db } from "../../../firebase.js"; 
 import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 
 async function updatePerformance(gameId) {
   if (!auth.currentUser) return;
@@ -128,7 +134,6 @@ async function updatePerformance(gameId) {
   const retryField = `retryFrequency_${gameId}`;
 
   const endTime = Date.now();
-  console.log("Start time:", startTime);
   const timeTaken = Math.floor((endTime - startTime) / 1000);
 
   console.log("🎯 Game Finished!");
@@ -152,4 +157,56 @@ async function updatePerformance(gameId) {
   });
 
   console.log("✅ Game stats updated in Firestore!");
+}
+
+async function calculateDifficulty(gameId) {
+  console.log("[calculateDifficulty] Called for gameId:", gameId);
+
+  return new Promise((resolve) => {
+    onAuthStateChanged(auth, async (user) => {
+      console.log("[onAuthStateChanged] triggered, user:", user);
+
+      if (!user) {
+        console.log("❗ No logged-in user, defaulting to Easy difficulty");
+        resolve(1);
+        return;
+      }
+
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        console.log("❗ No user data found, defaulting to Easy difficulty");
+        resolve(1);
+        return;
+      }
+
+      const userData = userSnap.data();
+      const timeStack = userData[`time_${gameId}`] || [];
+      const retryStack = userData[`retryFrequency_${gameId}`] || [];
+
+      if (timeStack.length === 0 || retryStack.length === 0) {
+        console.log("❗ Not enough game data, defaulting to Easy difficulty");
+        resolve(1);
+        return;
+      }
+
+      const avgTime = timeStack.reduce((a, b) => a + b, 0) / timeStack.length;
+      const avgMistakes = retryStack.reduce((a, b) => a + b, 0) / retryStack.length;
+
+      console.log(`📊 Calculated average time: ${avgTime.toFixed(2)}s`);
+      console.log(`📊 Calculated average mistakes: ${avgMistakes.toFixed(2)}`);
+
+      if (avgTime <= 30 && avgMistakes <= 1) {
+        console.log("🚀 Selected Hard difficulty (3)");
+        resolve(3);
+      } else if (avgTime <= 60 && avgMistakes <= 3) {
+        console.log("⚡ Selected Medium difficulty (2)");
+        resolve(2);
+      } else {
+        console.log("🐢 Selected Easy difficulty (1)");
+        resolve(1);
+      }
+    });
+  });
 }
