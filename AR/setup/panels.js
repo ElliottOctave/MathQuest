@@ -18,15 +18,16 @@ function createAppleCounterPanel(scene) {
   canvas.height = canvasHeight;
   const ctx = canvas.getContext('2d');
 
-  // 🟦 Soft blue background (match equation panel)
-  ctx.fillStyle = '#3A73A8'; // elegant soft blue
+  // 🟦 Soft blue background
+  ctx.fillStyle = '#3A73A8';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // 🍎 Apple counter text
-  ctx.fillStyle = '#FFD700'; // golden yellow
+  // ✍️ Apple counter text
+  ctx.fillStyle = '#FFD700';
   ctx.font = 'bold 48px Arial';
   ctx.textAlign = 'center';
-  ctx.fillText(text, canvas.width / 2, 80);
+  ctx.textBaseline = 'middle'; // ✅ center vertically
+  ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 
   const texture = new THREE.CanvasTexture(canvas);
   const material = new THREE.MeshBasicMaterial({
@@ -35,7 +36,6 @@ function createAppleCounterPanel(scene) {
     transparent: true
   });
 
-  // 💡 Match panel width to canvas aspect ratio
   const aspect = canvas.width / canvas.height;
   const height = 0.3;
   const width = height * aspect;
@@ -45,12 +45,12 @@ function createAppleCounterPanel(scene) {
     material
   );
 
-  panel.position.set(2, 2, 0); // adjust as needed
+  panel.position.set(2, 2, 0);
   scene.add(panel);
 
-  return { texture, ctx, panel };
-
+  return { texture, ctx, panel, canvas }; // 👈 optional but helpful
 }
+
 
 function createTutorialPanel(scene, camera) {
   const textureLoader = new THREE.TextureLoader();

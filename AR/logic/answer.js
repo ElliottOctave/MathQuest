@@ -13,24 +13,25 @@ function checkAnswer(gameState) {
 }
 
 function updateCounterDisplay(gameState) {
-  const { texture, ctx } = gameState.appleCounter;
+  const { texture, ctx, canvas } = gameState.appleCounter;
 
-  console.log("🧮 counter display update →", gameState.applesInBasket);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#114477'; // same blue as equation
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  ctx.clearRect(0, 0, 512, 128);
-  ctx.fillStyle = '#333';
-  ctx.fillRect(0, 0, 512, 128);
   ctx.fillStyle = '#FFD700';
   ctx.font = 'bold 48px Arial';
   ctx.textAlign = 'center';
-  ctx.fillText(`🍎 ${gameState.applesInBasket}`, 256, 80);
+  ctx.textBaseline = 'middle';
+  ctx.fillText(`🍎 ${gameState.applesInBasket}`, canvas.width / 2, canvas.height / 2);
 
-  // ✅ Force update texture
   texture.needsUpdate = true;
-  texture.minFilter = THREE.LinearFilter; // 👈 add this to ensure smooth refresh
+  gameState.appleCounter.panel.material.map = texture;
+  gameState.appleCounter.panel.material.needsUpdate = true;
 }
 
 
-  
+
+
 
 export { checkAnswer, updateCounterDisplay };
