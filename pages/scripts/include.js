@@ -1,4 +1,5 @@
 async function includeHTML() {
+  // Inject header and footer
   const header = await fetch('/pages/components/header.html');
   const headerText = await header.text();
   document.getElementById('header').innerHTML = headerText;
@@ -9,6 +10,10 @@ async function includeHTML() {
 }
 
 includeHTML().then(() => {
-  console.log('Header and Footer Loaded ✅');
-  import('/pages/navbar.js');  // << Corrected path!
+  console.log('Loader, Header and Footer Loaded ✅');
+  import('/pages/navbar.js');
+
+  import('../../auth.js').then(module => {
+    module.requireLogin();
+  });
 });

@@ -17,6 +17,9 @@ if (userNav) {
       </li>
     `;
 
+      // Hide Learn and Rewards
+  learnNav?.classList.add("d-none");
+  rewardsNav?.classList.add("d-none");
 
       document.getElementById("loginTrigger")?.addEventListener("click", (e) => {
         e.preventDefault();

@@ -1,7 +1,7 @@
 // auth.js
 
 import { auth, db } from './firebase.js';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { doc, setDoc, getDoc, updateDoc  } from "firebase/firestore";
 
 // Handle Registration
@@ -59,12 +59,7 @@ export async function handleLogin(event) {
     localStorage.setItem('userUID', uid);
 
     alert('Login successful!');
-    const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
-    loginModal.hide();
-
-    // Optional: redirect or refresh page
-    location.reload();
-
+    window.location.href = "/pages/home.html";
   } catch (error) {
     console.error(error);
     alert('Login failed: ' + error.message);
@@ -79,6 +74,18 @@ async function updateUserLevel(newLevel) {
       level: newLevel
     });
   }
+
+export function requireLogin() {
+  
+  onAuthStateChanged(auth, (user) => {
+    document.body.classList.add("loaded");
+
+    if (!user) {
+      console.warn("🚫 Not logged in — redirecting to home...");
+      window.location.href = "/pages/main.html";
+    }
+  });
+}
   
 
 // Attach event listeners once DOM is ready
