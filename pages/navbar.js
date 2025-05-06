@@ -12,9 +12,11 @@ if (userNav) {
     if (!user) {
       console.log("User is not logged in");
       userNav.innerHTML = `
-        <a href="#" class="nav-link" id="registerTrigger">Register</a>
-        <a href="#" class="nav-link" id="loginTrigger">Login</a>
-      `;
+      <li class="nav-item">
+        <a href="#" class="nav-link" id="loginTrigger">Account</a>
+      </li>
+    `;
+
 
       document.getElementById("loginTrigger")?.addEventListener("click", (e) => {
         e.preventDefault();
