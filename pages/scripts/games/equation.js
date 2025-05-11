@@ -1,23 +1,32 @@
+import { setupGame, updatePerformance } from '../template/gameTemplate.js';
+
 let difficulty = 1;
 let progress = 0;
 let currentEquation = [];
 let correctEquation = [];
 let missingValues = [];
 
-window.onload = () => {
-  changeDifficulty();
-};
+// Initialize the game with the necessary functions
+const game = setupGame({
+  generateQuestionFn: generateEquation,
+  checkAnswerFn: submitAnswer,
+  getFeedbackMessageFn: showFeedback,
+  gameId: "game7", // Unique game ID for tracking
+});
 
-function changeDifficulty() {
-  const select = document.getElementById("difficultySelect");
-  difficulty = parseInt(select.value);
+window.readStory = game.readStory;
+window.changeDifficulty = game.changeDifficulty;
+window.submitAnswer = submitAnswer;
+window.restartGame = () => {
   progress = 0;
   document.getElementById("progressBar").style.width = "0%";
-  document.getElementById("feedback").textContent = "";
-  generateEquation();
-}
+  game.restartGame(); // This calls the restart function from the game template
+};
 
-function generateEquation() {
+window.onload = () => changeDifficulty();
+
+// Function to generate the equation
+function generateEquation(difficulty) {
   const operators = ['+', '-'];
   let left = 0, right = 0, result = 0, op = '+';
 
@@ -63,6 +72,7 @@ function generateEquation() {
   renderTiles();
 }
 
+// Function to render the equation with placeholders
 function renderEquation() {
   const container = document.getElementById('equationContainer');
   container.innerHTML = '';
@@ -84,6 +94,7 @@ function renderEquation() {
   });
 }
 
+// Function to render the tiles with possible answers
 function renderTiles() {
   const pool = ['+', '-', '=', ...Array.from({ length: 21 }, (_, i) => `${i}`)];
   const tilesContainer = document.getElementById("tiles");
@@ -109,6 +120,7 @@ function renderTiles() {
   });
 }
 
+// Function to handle drag and drop of tiles
 function handleDrop(e) {
   e.preventDefault();
   const value = e.dataTransfer.getData("text/plain");
@@ -117,7 +129,8 @@ function handleDrop(e) {
   slot.style.backgroundColor = "#e0f7fa";
 }
 
-function submitAnswer() {
+// Function to submit the answer
+export function submitAnswer() {
   const slots = document.querySelectorAll('.equation-box .equation-slot');
   const guess = Array.from(slots).map(el => el.textContent.trim());
 
@@ -147,6 +160,7 @@ function submitAnswer() {
         const winModal = new bootstrap.Modal(document.getElementById("winModal"));
         winModal.show();
         launchConfetti();
+        updatePerformance("game7");
       }, 600);
     } else {
       setTimeout(generateEquation, 1200);
@@ -157,34 +171,19 @@ function submitAnswer() {
   }
 }
 
+// Function to show feedback
 function showFeedback(message, correct) {
   const feedback = document.getElementById("feedback");
   feedback.textContent = message;
   feedback.className = correct ? 'correct' : 'incorrect';
 }
 
+// Function to shuffle the array
 function shuffleArray(arr) {
   return arr.sort(() => Math.random() - 0.5);
 }
 
-function restartGame() {
-  progress = 0;
-  document.getElementById("progressBar").style.width = "0%";
-  generateEquation();
-  document.getElementById("feedback").textContent = '';
-}
-
-function readStory() {
-  const synth = window.speechSynthesis;
-  if (synth.speaking) synth.cancel();
-  const text = document.getElementById("storyText").textContent;
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = "en-US";
-  utter.rate = 0.9;
-  utter.pitch = 1;
-  synth.speak(utter);
-}
-
+// Function to launch confetti when the game is won
 function launchConfetti() {
   const duration = 2000;
   const end = Date.now() + duration;
