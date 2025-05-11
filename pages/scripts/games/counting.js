@@ -1,25 +1,33 @@
+import { setupGame, updatePerformance } from '../template/gameTemplate.js';
+
 let difficulty = 1;
 let startNumber = 1;
 let currentTarget = 1;
 let totalClicks = 0;
 
-window.onload = () => {
-  changeDifficulty();
-};
+  // Call the setupGame with required functions
+  const game = setupGame({
+    generateQuestionFn: generateQuestion,
+    checkAnswerFn: checkAnswer,
+    getFeedbackMessageFn: getFeedbackMessage,
+    gameId: "game3", // Unique game ID for tracking
+  });
 
-function changeDifficulty() {
-  const select = document.getElementById("difficultySelect");
-  difficulty = parseInt(select.value);
-  startNewGame();
-}
+  window.readStory = game.readStory;
+  window.changeDifficulty = game.changeDifficulty;
+  window.submitAnswer = game.submitAnswer;
+  window.restartGame = game.restartGame;
 
-function startNewGame() {
+  window.onload = () => changeDifficulty();
+
+// Function to generate the question
+function generateQuestion(difficulty) {
   const balloonArea = document.getElementById("balloonArea");
   balloonArea.innerHTML = "";
   totalClicks = 0;
   document.getElementById("progressBar").style.width = "0%";
 
-  // Determine starting number
+  // Set the starting number based on the difficulty
   if (difficulty === 1) {
     startNumber = 1;
   } else if (difficulty === 2) {
@@ -27,7 +35,7 @@ function startNewGame() {
   } else {
     startNumber = Math.floor(Math.random() * 80) + 1; // 1-80
   }
-  
+
   currentTarget = startNumber;
 
   const numbers = Array.from({ length: 10 }, (_, i) => startNumber + i);
@@ -42,46 +50,58 @@ function startNewGame() {
   });
 }
 
+// Function to handle the click on the balloon
 function handleClick(num, balloon) {
-    if (num === currentTarget) {
-      balloon.style.transition = "transform 1s ease, opacity 1s ease";
-      balloon.style.transform = "translateY(-200px)";
-      balloon.style.opacity = "0";
-      balloon.style.pointerEvents = "none"; // disable further clicks
-      currentTarget++;
-      totalClicks++;
-  
-      const progress = (totalClicks / 10) * 100;
-      document.getElementById("progressBar").style.width = `${progress}%`;
-  
-      if (totalClicks >= 10) {
-        setTimeout(() => {
-          const winModal = new bootstrap.Modal(document.getElementById("winModal"));
-          winModal.show();
-          launchConfetti();
-        }, 600);
-      }
-    } else {
-      balloon.classList.add("wrong");
-      setTimeout(() => balloon.classList.remove("wrong"), 500);
+  if (num === currentTarget) {
+    balloon.style.transition = "transform 1s ease, opacity 1s ease";
+    balloon.style.transform = "translateY(-200px)";
+    balloon.style.opacity = "0";
+    balloon.style.pointerEvents = "none"; // Disable further clicks
+    currentTarget++;
+    totalClicks++;
+
+    const progress = (totalClicks / 10) * 100;
+    document.getElementById("progressBar").style.width = `${progress}%`;
+
+    if (totalClicks >= 10) {
+      setTimeout(() => {
+        updatePerformance("game3");
+        const winModal = new bootstrap.Modal(document.getElementById("winModal"));
+        winModal.show();
+        launchConfetti();
+      }, 600);
     }
-  }  
+  } else {
+    balloon.classList.add("wrong");
+    setTimeout(() => balloon.classList.remove("wrong"), 500);
+  }
+}
 
+// Function to shuffle an array
+function shuffleArray(arr) {
+  return arr.sort(() => Math.random() - 0.5);
+}
+
+// Function to restart the game
 function restartGame() {
-  startNewGame();
+  totalClicks = 0;
+  document.getElementById("progressBar").style.width = "0%";
+  generateQuestion(difficulty);
 }
 
-function readStory() {
-  const synth = window.speechSynthesis;
-  if (synth.speaking) synth.cancel();
-  const text = document.getElementById("storyText").textContent;
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = "en-US";
-  utter.rate = 0.9;
-  utter.pitch = 1;
-  synth.speak(utter);
+// Function to check the answer (for template integration)
+function checkAnswer(userInput) {
+  return { correct: userInput === currentTarget, correctAnswer: currentTarget };
 }
 
+// Function to get the feedback message
+function getFeedbackMessage(correct, correctAnswer) {
+  return correct
+    ? `✅ Great job! You clicked the correct balloon.`
+    : `❌ Oops! Try again. The correct balloon was ${correctAnswer}.`;
+}
+
+// Function to launch confetti when the game is won
 function launchConfetti() {
   const duration = 2000;
   const end = Date.now() + duration;
@@ -106,8 +126,4 @@ function launchConfetti() {
       requestAnimationFrame(frame);
     }
   })();
-}
-
-function shuffleArray(arr) {
-  return arr.sort(() => Math.random() - 0.5);
 }
