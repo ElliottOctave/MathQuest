@@ -36,6 +36,7 @@ main {
               url('../assets/background.avif') center/cover;
   color: #fff;
   font-family: 'Fredoka One', cursive;
+  padding-bottom: 50px; /* Add padding bottom to create space below */
 }
 
 .hero h1 {
@@ -63,6 +64,7 @@ button.btn {
   font-size: 1.2rem;
   border-radius: 20px;
   transition: transform 0.3s ease;
+  margin-top: 50px; /* Move the button lower by adding margin-top */
 }
 
 button.btn:hover {
@@ -116,5 +118,9 @@ footer {
 
   .hero p {
     font-size: 1rem;
+  }
+
+  button.btn {
+    margin-top: 30px; /* Adjust button position for smaller screens */
   }
 }
