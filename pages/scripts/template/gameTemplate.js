@@ -31,6 +31,7 @@ export function setupGame({
   }
   
   async function changeDifficulty() {
+    console.log("Changing difficulty...");
     if (gameId) {
       const newDifficulty = await calculateDifficulty(gameId);
       console.log("New difficulty level:", newDifficulty);
@@ -120,7 +121,8 @@ import { auth, db } from "../../../firebase.js";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 
-async function updatePerformance(gameId) {
+export async function updatePerformance(gameId) {
+  console.log("[updatePerformance] Called for gameId:", gameId);
   if (!auth.currentUser) return;
 
   const userRef = doc(db, "users", auth.currentUser.uid);
@@ -140,6 +142,10 @@ async function updatePerformance(gameId) {
   console.log(`🕒 Time taken: ${timeTaken} seconds`);
   console.log(`❌ Mistakes made: ${mistakes}`);
 
+  // Add 1 coin to the user's coins after winning
+  let newCoins = userData['coins'] || 0;
+  newCoins += 1; // Add 1 coin
+
   const newTimeStack = [...(userData[timeField] || []), timeTaken];
   const newRetryStack = [...(userData[retryField] || []), mistakes];
 
@@ -150,10 +156,12 @@ async function updatePerformance(gameId) {
   console.log(`🗂️ Previous Retries: ${userData[retryField] || []}`);
   console.log(`📥 New Times: ${trimmedTimeStack}`);
   console.log(`📥 New Retries: ${trimmedRetryStack}`);
+  console.log(`💰 Updated Coins: ${newCoins}`);
 
   await updateDoc(userRef, {
     [timeField]: trimmedTimeStack,
-    [retryField]: trimmedRetryStack
+    [retryField]: trimmedRetryStack,
+    ['coins']: newCoins // Update coins in Firestore
   });
 
   console.log("✅ Game stats updated in Firestore!");

@@ -28,7 +28,25 @@ export async function handleRegister(event) {
       time_game2: [],
       retryFrequency_game2: [],
       time_game3: [],
-      retryFrequency_game3: []
+      retryFrequency_game3: [],
+      time_game4: [],
+      retryFrequency_game4: [],
+      time_game5: [],
+      retryFrequency_game5: [],
+      time_game6: [],
+      retryFrequency_game6: [],
+      time_game7: [],
+      retryFrequency_game7: [],
+      time_game8: [],
+      retryFrequency_game8: [],
+      time_game9: [],
+      retryFrequency_game9: [],
+      time_game10: [],
+      retryFrequency_game10: [],
+      time_game11: [],
+      retryFrequency_game11: [],
+      time_game12: [],
+      retryFrequency_game12: [],
     });
 
     alert('Registration successful! You can now log in.');

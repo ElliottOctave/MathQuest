@@ -1,25 +1,31 @@
+import { setupGame, updatePerformance } from '../template/gameTemplate.js';
+
 let difficulty = 1;
 let progress = 0;
 let flags = [];
 let selectedOrder = [];
 let synth = window.speechSynthesis;
 
-window.onload = () => {
-  changeDifficulty();
-};
 
-function changeDifficulty() {
-  difficulty = parseInt(document.getElementById("difficultySelect").value);
-  restartGame();
-}
+  // Initialize the game with the necessary functions
+  const game = setupGame({
+    generateQuestionFn: generateQuestion,
+    checkAnswerFn: checkAnswer,
+    getFeedbackMessageFn: getFeedbackMessage,
+    gameId: "game5", // Unique game ID for tracking
+  });
 
-function restartGame() {
-  progress = 0;
-  document.getElementById("progressBar").style.width = "0%";
-  generateQuestion();
-}
+  window.readStory = game.readStory;
+  window.changeDifficulty = game.changeDifficulty;
+  window.restartGame = game.restartGame;
+  // Expose submitAnswer to the global scope
+  window.submitAnswer = submitAnswer;
 
-function generateQuestion() {
+  window.onload = () => changeDifficulty();
+
+// Function to generate the question (i.e., create the flags)
+function generateQuestion(difficulty) {
+  console.log("Generating question for difficulty:", difficulty);
   const flagsArea = document.getElementById("flagsArea");
   flagsArea.innerHTML = "";
   document.getElementById("feedback").innerHTML = "";
@@ -57,50 +63,7 @@ function generateQuestion() {
   updateTaskText();
 }
 
-function updateTaskText() {
-  const task = document.getElementById("taskText");
-  if (difficulty === 1) {
-    task.innerHTML = "Click the shortest flag!";
-  } else if (difficulty === 2) {
-    task.innerHTML = "Click the tallest flag!";
-  } else {
-    task.innerHTML = "Drag the flags from shortest ➔ tallest!";
-  }
-}
-
-function selectFlag(id) {
-  const flagDivs = document.querySelectorAll('.flag-block');
-  flagDivs.forEach(div => div.classList.remove('selected'));
-  
-  const flagDiv = document.querySelector(`[data-id="${id}"]`);
-  flagDiv.classList.add('selected');
-  selectedOrder = [id];
-}
-
-// DRAG AND DROP HANDLERS
-function handleDragStart(e) {
-  e.dataTransfer.setData("text/plain", e.target.dataset.id);
-}
-
-function handleDragOver(e) {
-  e.preventDefault();
-}
-
-function handleDrop(e) {
-  e.preventDefault();
-  const draggedId = e.dataTransfer.getData("text/plain");
-  const targetId = e.target.dataset.id;
-
-  const flagsArea = document.getElementById("flagsArea");
-  const draggedEl = document.querySelector(`[data-id="${draggedId}"]`);
-  const targetEl = document.querySelector(`[data-id="${targetId}"]`);
-
-  if (draggedEl && targetEl && draggedEl !== targetEl) {
-    flagsArea.insertBefore(draggedEl, targetEl);
-  }
-}
-
-function submitAnswer() {
+export function submitAnswer() {
   if (difficulty < 3) {
     if (selectedOrder.length === 0) {
       document.getElementById("feedback").innerHTML = "❗ Please select a flag first!";
@@ -143,34 +106,82 @@ function correctAnswer() {
     setTimeout(() => {
       const win = new bootstrap.Modal(document.getElementById("winModal"));
       win.show();
+      updatePerformance("game5");
       launchConfetti();
     }, 500);
   } else {
     setTimeout(() => {
-      generateQuestion();
+      generateQuestion(difficulty);
     }, 1500);
   }
 }
 
-function wrongAnswer() {
-  document.getElementById("feedback").innerHTML = `<span class="incorrect">❌ Try again!</span>`;
+// Update the task instructions based on difficulty
+function updateTaskText() {
+  const task = document.getElementById("taskText");
+  if (difficulty === 1) {
+    task.innerHTML = "Click the shortest flag!";
+  } else if (difficulty === 2) {
+    task.innerHTML = "Click the tallest flag!";
+  } else {
+    task.innerHTML = "Drag the flags from shortest ➔ tallest!";
+  }
 }
 
-function randomColor() {
-  const colors = ["#FF6B6B", "#6BCB77", "#4D96FF", "#FFD93D", "#FF6F91"];
-  return colors[Math.floor(Math.random() * colors.length)];
+// Function to select a flag (click mode)
+function selectFlag(id) {
+  console.log("Selected flag ID:", id);
+  const flagDivs = document.querySelectorAll('.flag-block');
+  flagDivs.forEach(div => div.classList.remove('selected'));
+
+  const flagDiv = document.querySelector(`[data-id="${id}"]`);
+  flagDiv.classList.add('selected');
+  selectedOrder = [id];
 }
 
-function readStory() {
-  if (synth.speaking) synth.cancel();
-  const text = document.getElementById("storyText").textContent;
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = "en-US";
-  utter.rate = 0.9;
-  utter.pitch = 1;
-  synth.speak(utter);
+// DRAG AND DROP HANDLERS
+function handleDragStart(e) {
+  e.dataTransfer.setData("text/plain", e.target.dataset.id);
 }
 
+function handleDragOver(e) {
+  e.preventDefault();
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  const draggedId = e.dataTransfer.getData("text/plain");
+  const targetId = e.target.dataset.id;
+
+  const flagsArea = document.getElementById("flagsArea");
+  const draggedEl = document.querySelector(`[data-id="${draggedId}"]`);
+  const targetEl = document.querySelector(`[data-id="${targetId}"]`);
+
+  if (draggedEl && targetEl && draggedEl !== targetEl) {
+    flagsArea.insertBefore(draggedEl, targetEl);
+  }
+}
+
+// Function to check if the answer is correct (for template integration)
+function checkAnswer(userInput) {
+  return { correct: selectedOrder[0] === userInput, correctAnswer: selectedOrder[0] };
+}
+
+// Function to get the feedback message (for template integration)
+function getFeedbackMessage(correct, correctAnswer) {
+  return correct
+    ? `✅ Great job! You selected the correct flag.`
+    : `❌ Oops! Try again. The correct flag was ${correctAnswer}.`;
+}
+
+// Function to handle the restart of the game
+function restartGame() {
+  progress = 0;
+  document.getElementById("progressBar").style.width = "0%";
+  generateQuestion(difficulty);
+}
+
+// Function to launch confetti when the game is won
 function launchConfetti() {
   const duration = 2000;
   const end = Date.now() + duration;
@@ -195,4 +206,10 @@ function launchConfetti() {
       requestAnimationFrame(frame);
     }
   })();
+}
+
+// Function to get a random color for the flags
+function randomColor() {
+  const colors = ["#FF6B6B", "#6BCB77", "#4D96FF", "#FFD93D", "#FF6F91"];
+  return colors[Math.floor(Math.random() * colors.length)];
 }
