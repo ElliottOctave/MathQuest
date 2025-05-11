@@ -1,26 +1,37 @@
-let difficulty = 1;
+import { setupGame, updatePerformance } from '../template/gameTemplate.js';
+
+let game_difficulty = 1;
 let progress = 0;
 let coins = 0;
 let gems = 0;
 const synth = window.speechSynthesis;
 
-window.onload = () => {
-  changeDifficulty();
-};
+// Initialize the game with the necessary functions
+const game = setupGame({
+  generateQuestionFn: generateQuestion,
+  checkAnswerFn: submitAnswer,
+  getFeedbackMessageFn: () => {},
+  gameId: "game8", // Unique game ID for tracking
+});
 
-function changeDifficulty() {
-  difficulty = parseInt(document.getElementById("difficultySelect").value);
-  restartGame();
-}
+window.readStory = game.readStory;
+window.changeDifficulty = game.changeDifficulty;
+window.submitAnswer = submitAnswer;
 
-function restartGame() {
+// Expose restartGame to reset progress and call the restart function from the game template
+window.restartGame = () => {
   progress = 0;
   document.getElementById("progressBar").style.width = "0%";
-  document.getElementById("feedback").innerHTML = "";
-  generateQuestion();
-}
+  game.restartGame(); // This calls the restart function from the game template
+};
 
-function generateQuestion() {
+
+window.onload = () => changeDifficulty();
+
+// Function to generate the question
+function generateQuestion(difficulty) {
+  game_difficulty = difficulty || 1; // Default to 1 if not provided
+  console.log("Generating question for difficulty:", game_difficulty);
   document.getElementById("answer").value = "";
   document.getElementById("treasurePile").innerHTML = "";
 
@@ -49,7 +60,8 @@ function generateQuestion() {
   }
 }
 
-function submitAnswer() {
+// Function to submit the answer
+export function submitAnswer() {
   const input = document.getElementById("answer").value;
   const feedback = document.getElementById("feedback");
   const correct = coins * 10 + gems;
@@ -70,10 +82,12 @@ function submitAnswer() {
         const win = new bootstrap.Modal(document.getElementById("winModal"));
         win.show();
         launchConfetti();
+        updatePerformance("game8");
       }, 600);
     } else {
+      console.log(game_difficulty);
       setTimeout(() => {
-        generateQuestion();
+        generateQuestion(game_difficulty);
       }, 1500);
     }
   } else {
@@ -81,16 +95,7 @@ function submitAnswer() {
   }
 }
 
-function readStory() {
-  if (synth.speaking) synth.cancel();
-  const text = document.getElementById("storyText").textContent;
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = "en-US";
-  utter.rate = 0.9;
-  utter.pitch = 1;
-  synth.speak(utter);
-}
-
+// Function to launch confetti when the game is won
 function launchConfetti() {
   const duration = 2000;
   const end = Date.now() + duration;

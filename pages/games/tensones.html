@@ -24,16 +24,6 @@
     <button onclick="readStory()" class="sound-btn">🔊</button>
   </div>
 
-  <!-- Difficulty -->
-  <div class="text-center mb-4">
-    <label for="difficultySelect" class="form-label">Choose Difficulty:</label>
-    <select id="difficultySelect" class="form-select w-50 mx-auto" onchange="changeDifficulty()">
-      <option value="1">Easy (Up to 30)</option>
-      <option value="2">Medium (Up to 60)</option>
-      <option value="3">Hard (Up to 99)</option>
-    </select>
-  </div>
-
   <!-- Legend -->
   <div class="d-flex justify-content-center align-items-center gap-4 mb-4">
     <div class="legend">
@@ -88,7 +78,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<script src="../scripts/games/tensones.js"></script>
+<script type="module" src="../scripts/games/tensones.js"></script>
 
 </body>
 </html>

@@ -27,21 +27,8 @@ let basket = [];
     target = 0;
     basket = [];
     document.getElementById("basket").innerHTML = "";
+    document.getElementById("feedback").innerHTML = "";
   };
-
-// Function to change the difficulty of the game
-function changeDifficulty() {
-  difficulty = parseInt(document.getElementById("difficultySelect").value);
-  restartGame();
-}
-
-function restartGame() {
-  basket = [];
-  document.getElementById("basket").innerHTML = "";
-  document.getElementById("feedback").innerHTML = "";
-  document.getElementById("progressBar").style.width = "0%";
-  generateQuestion();
-}
 
 function generateQuestion(difficulty) {
   let max;
