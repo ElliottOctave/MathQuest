@@ -1,11 +1,35 @@
+import { setupGame, updatePerformance } from '../template/gameTemplate.js';
+
 let difficulty = 1;
 let target = 0;
 let basket = [];
 
-window.onload = () => {
-  changeDifficulty();
-};
+  // Initialize the game with the necessary functions
+  const game = setupGame({
+    generateQuestionFn: generateQuestion,
+    checkAnswerFn: submitAnswer,
+    getFeedbackMessageFn: () => {},
+    gameId: "game4", // Unique game ID for tracking
+  });
 
+  window.readStory = game.readStory;
+  window.onload = game.changeDifficulty;
+  window.drag = drag;
+  window.allowDrop = allowDrop;
+  window.drop = drop;
+  window.submitAnswer = submitAnswer;
+  window.removeItem = removeItem;
+
+  // Expose restartGame to reset progress and call the restart function from the game template
+  window.restartGame = () => {
+    document.getElementById("progressBar").style.width = "0%";
+    game.restartGame(); // This calls the restart function from the game template
+    target = 0;
+    basket = [];
+    document.getElementById("basket").innerHTML = "";
+  };
+
+// Function to change the difficulty of the game
 function changeDifficulty() {
   difficulty = parseInt(document.getElementById("difficultySelect").value);
   restartGame();
@@ -19,7 +43,7 @@ function restartGame() {
   generateQuestion();
 }
 
-function generateQuestion() {
+function generateQuestion(difficulty) {
   let max;
   if (difficulty === 1) max = 30;
   else if (difficulty === 2) max = 60;
@@ -29,14 +53,17 @@ function generateQuestion() {
   document.getElementById("targetNumber").textContent = target;
 }
 
+// Function to allow items to be dragged and dropped into the basket
 function allowDrop(ev) {
   ev.preventDefault();
 }
 
+// Function to handle the dragging of items
 function drag(ev) {
   ev.dataTransfer.setData("text", ev.target.id);
 }
 
+// Function to handle dropping of dragged items into the basket
 function drop(ev) {
   ev.preventDefault();
   const data = ev.dataTransfer.getData("text");
@@ -51,6 +78,7 @@ function drop(ev) {
   document.getElementById("basket").appendChild(img);
 }
 
+// Function to remove an item from the basket
 function removeItem(img) {
   const type = img.dataset.type;
   const index = basket.indexOf(type);
@@ -60,7 +88,8 @@ function removeItem(img) {
   img.remove(); // Remove visually
 }
 
-function submitAnswer() {
+// Function to submit the answer
+export function submitAnswer() {
   const ones = basket.filter(item => item === "balloon").length;
   const tens = basket.filter(item => item === "gift").length;
   const total = tens * 10 + ones;
@@ -75,12 +104,14 @@ function submitAnswer() {
 
     if (width >= 100) {
       setTimeout(() => {
-        const win = new bootstrap.Modal(document.getElementById("winModal"));
-        win.show();
+        const winModal = new bootstrap.Modal(document.getElementById("winModal"));
+        winModal.show();
         launchConfetti();
+        updatePerformance("game4");
       }, 600);
     } else {
       setTimeout(() => {
+        console.log(difficulty);
         basket = [];
         document.getElementById("basket").innerHTML = "";
         generateQuestion();
@@ -91,17 +122,7 @@ function submitAnswer() {
   }
 }
 
-function readStory() {
-  const synth = window.speechSynthesis;
-  if (synth.speaking) synth.cancel();
-  const text = document.getElementById("storyText").textContent;
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = "en-US";
-  utter.rate = 0.9;
-  utter.pitch = 1;
-  synth.speak(utter);
-}
-
+// Function to launch confetti when the game is won
 function launchConfetti() {
   const duration = 2000;
   const end = Date.now() + duration;
