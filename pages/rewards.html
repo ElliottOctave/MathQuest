@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,169 +7,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="styles/style.css">
   <link rel="stylesheet" href="styles/mathQuest.css">
-  <style>
-    html,
-    body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      display: flex;
-      flex-direction: column;
-      background-color: #eee;
-    }
-
-    main {
-      flex: 1;
-      display: flex;
-      overflow: hidden;
-      margin: 0;
-      padding: 0;
-    }
-
-    aside {
-      width: 800px;
-      /* ⬅️ wider shop */
-      background-color: #f7f7f7;
-      padding: 1rem;
-      overflow-y: auto;
-      border-right: 2px solid #ccc;
-    }
-
-    section {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 0.5rem;
-    }
-
-    #zoo-container {
-      flex: 1;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      height: 100%;
-    }
-
-    #zoo-image {
-      height: 100%;
-      width: auto;
-      max-height: 100%;
-      display: block;
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    #zoo {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 100%;
-      z-index: 2;
-    }
-
-
-    .zoo-animal {
-      position: absolute;
-      width: 80px;
-      cursor: grab;
-      z-index: 10;
-      transition: left 0.25s ease, top 0.25s ease, transform 0.2s ease;
-    }
-
-    .animal-img {
-      filter: grayscale(100%);
-      transition: filter 0.3s ease;
-    }
-
-    .animal-img.owned {
-      filter: none;
-    }
-
-    .animal-card {
-      width: 100%;
-      text-align: center;
-      padding: 10px;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      margin-bottom: 10px;
-    }
-
-    #zoo-guide {
-      position: absolute;
-      left: 0;
-      width: 100%;
-      height: 25%;
-      bottom: 0;
-      background: rgba(0, 255, 0, 0.15);
-      border-top: 2px dashed #28a745;
-      display: none;
-      pointer-events: none;
-      z-index: 5;
-    }
-
-    footer {
-      background: #222;
-      color: white;
-      text-align: center;
-      padding: 10px;
-    }
-
-    .zoo-heading {
-      font-family: 'Comic Sans MS', cursive, sans-serif;
-      font-size: 2rem;
-      color: #2c3e50;
-      background: linear-gradient(to right, #ffde59, #ff914d);
-      padding: 8px 16px;
-      border-radius: 12px;
-      display: inline-block;
-      box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .zoo-clear {
-      font-weight: bold;
-      border-radius: 10px;
-      box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.15);
-      padding: 8px 16px;
-      transition: background-color 0.2s ease;
-    }
-
-    .zoo-clear:hover {
-      background-color: #e67e22;
-      color: white;
-    }
-
-    .btn-row {
-      display: flex;
-      justify-content: flex-end;
-      gap: 0.5rem;
-      margin-top: 8px;
-    }
-
-
-    .animal-card button {
-      white-space: nowrap;
-    }
-
-    .animal-card {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      margin-bottom: 10px;
-    }
-  </style>
 </head>
-
 <body>
 
   <!-- Navbar -->
@@ -178,163 +15,30 @@
 
   <!-- Main Content -->
   <main>
-    <aside>
-      <h2 class="zoo-heading text-center">🐾 Animal Shop</h2>
-      <div id="shop"></div>
-    </aside>
+    <section class="text-center py-5">
+      <div class="container">
+        <h1 class="display-4">Reward Center!</h1>
+        <p class="lead">You've earned some points! Choose what you'd like to do:</p>
 
-    <section>
-      <div class="d-flex justify-content-between align-items-center mb-2">
-        <h2 class="zoo-heading">🦓 Your Zoo</h2>
-        <button class="btn btn-warning btn-lg zoo-clear" onclick="resetZoo()">🗑️ Clear Zoo</button>
-      </div>
-      <div id="zoo-container">
-        <img id="zoo-image" src="assets/animals/zoo.jpg" alt="Zoo">
-        <div id="zoo" ondragover="event.preventDefault()">
-          <div id="zoo-guide"></div>
-          <!-- Animals get appended here -->
+        <!-- Reward Action Buttons -->
+        <div class="d-flex justify-content-center gap-4 flex-wrap">
+          <a href="./VR-GAMES/vrmenu.html" class="btn btn-success btn-lg px-4">
+            🕶️ Play a VR Game
+          </a>
+          <a href="zoo_customization.html" class="btn btn-primary btn-lg px-4">
+            🐾 Customize Your Zoo
+          </a>
         </div>
       </div>
-
     </section>
   </main>
-
 
   <!-- Footer -->
   <div id="footer"></div>
 
   <!-- Scripts -->
-  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    const animals = [
-      { name: 'bear', img: 'bear.webp', price: 10, displayName: 'Benny the Bear' },
-      { name: 'fox', img: 'fox.png', price: 10, displayName: 'Foxy the Fox' },
-      { name: 'zuri', img: 'zuri.png', price: 10, displayName: 'Zuri the Zebra' },
-      { name: 'professor', img: 'professor.png', price: 10, displayName: 'Professor Puzzlo' },
-      { name: 'rabbit', img: 'rabbit.webp', price: 10, displayName: 'Ruby the Rabbit' },
-      { name: 'cooper', img: 'cooper.png', price: 10, displayName: 'Captain Cooper' },
-      { name: 'lemur', img: 'lemur.webp', price: 10, displayName: 'Leo the Lemur' },
-      { name: 'timmy', img: 'timmy.webp', price: 10, displayName: 'Timmy the Turtle' },
-      { name: 'dot', img: 'dot.png', price: 10, displayName: 'Detective Dog' }
-    ];
-
-
-    let userPoints = 100;
-    const ownedAnimals = {};
-    const shopEl = document.getElementById('shop');
-    const zooEl = document.getElementById('zoo');
-    const zooGuide = document.getElementById('zoo-guide');
-
-    function resetZoo() {
-      document.querySelectorAll('.zoo-animal').forEach(a => a.remove());
-    }
-
-    animals.forEach(animal => {
-  const wrapper = document.createElement('div');
-  wrapper.className = 'animal-card d-flex align-items-center justify-content-between';
-
-  // 🧩 Left column: Image + name
-  const infoCol = document.createElement('div');
-  infoCol.className = 'd-flex align-items-center';
-
-  const img = document.createElement('img');
-  img.src = `assets/animals/${animal.img}`;
-  img.alt = animal.name;
-  img.width = 80;
-  img.classList.add('animal-img', 'me-3');
-
-  const label = document.createElement('div');
-  label.textContent = animal.displayName;
-  label.className = 'fw-bold';
-
-  infoCol.appendChild(img);
-  infoCol.appendChild(label);
-
-  // 🎯 Right column: Buttons
-  const btnBuy = document.createElement('button');
-  btnBuy.className = 'btn btn-primary btn-sm';
-  btnBuy.innerText = `Buy (${animal.price} pts)`;
-
-  const btnPlace = document.createElement('button');
-  btnPlace.className = 'btn btn-success btn-sm';
-  btnPlace.innerText = 'Place in Zoo';
-  btnPlace.style.display = 'none';
-
-  const btnContainer = document.createElement('div');
-  btnContainer.className = 'btn-row';
-  btnContainer.appendChild(btnBuy);
-  btnContainer.appendChild(btnPlace);
-
-  // 🧩 Add both columns to card
-  wrapper.appendChild(infoCol);
-  wrapper.appendChild(btnContainer);
-  shopEl.appendChild(wrapper);
-
-  // 💰 Buy Logic
-  btnBuy.onclick = () => {
-    if (userPoints >= animal.price && !ownedAnimals[animal.name]) {
-      userPoints -= animal.price;
-      ownedAnimals[animal.name] = true;
-      img.classList.add('owned');
-      btnBuy.disabled = true;
-      btnBuy.className = 'btn btn-secondary btn-sm';
-      btnBuy.innerText = 'Owned';
-      btnPlace.style.display = 'inline-block';
-    }
-  };
-
-  // 🐾 Place in Zoo Logic
-  btnPlace.onclick = () => {
-    if (document.getElementById(`zoo-${animal.name}`)) return;
-
-    const zooAnimal = document.createElement('img');
-    zooAnimal.src = `assets/animals/${animal.img}`;
-    zooAnimal.className = 'zoo-animal';
-    zooAnimal.id = `zoo-${animal.name}`;
-
-    const zooRect = zooEl.getBoundingClientRect();
-    const zooWidth = zooEl.offsetWidth;
-    const zooHeight = zooEl.offsetHeight;
-    const animalSize = 80;
-
-    const centerX = (zooWidth - animalSize) / 2;
-    const bottomY = zooHeight - animalSize - 20;
-
-    zooAnimal.style.left = `${centerX}px`;
-    zooAnimal.style.top = `${bottomY}px`;
-    zooAnimal.draggable = true;
-
-    zooAnimal.addEventListener('dragstart', (e) => {
-      e.dataTransfer.setData('text/plain', animal.name);
-      zooAnimal.dataset.dragging = true;
-      zooAnimal.style.transform = 'scale(1.1) translateY(-4px)';
-    });
-
-    zooAnimal.addEventListener('dragend', (e) => {
-      const zooRect = zooEl.getBoundingClientRect();
-      const x = e.pageX - zooRect.left - 40;
-      const y = e.pageY - zooRect.top - 40;
-      const maxX = zooEl.offsetWidth - 80;
-      const maxY = zooEl.offsetHeight - 80;
-
-      const clampedX = Math.max(0, Math.min(x, maxX));
-      const clampedY = Math.max(0, Math.min(y, maxY));
-
-      zooAnimal.style.left = `${clampedX}px`;
-      zooAnimal.style.top = `${clampedY}px`;
-      zooAnimal.style.transform = 'scale(1)';
-      zooAnimal.dataset.dragging = false;
-    });
-
-    zooEl.appendChild(zooAnimal);
-  };
-});
-
-
-   </script>
-   <script src="/pages/scripts/include.js"></script>
+  <script src="/pages/scripts/include.js"></script>
 
 </body>
-
 </html>
