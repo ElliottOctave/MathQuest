@@ -18,7 +18,6 @@ let synth = window.speechSynthesis;
   window.readStory = game.readStory;
   window.changeDifficulty = game.changeDifficulty;
   window.restartGame = game.restartGame;
-  // Expose submitAnswer to the global scope
   window.submitAnswer = submitAnswer;
 
   window.onload = () => changeDifficulty();

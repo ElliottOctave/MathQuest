@@ -7,6 +7,7 @@ export function setupGame({
   checkAnswerFn,
   getFeedbackMessageFn,
   gameId,
+  restartGameFn,
   readStoryTextId = "storyText",
   answerInputId = "answer",
   feedbackId = "feedback",
