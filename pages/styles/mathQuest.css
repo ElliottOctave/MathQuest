@@ -8,14 +8,6 @@ body {
   font-family: 'Comic Sans MS', 'Fredoka One', cursive, sans-serif;
 }
 
-body {
-  opacity: 0;
-  transition: opacity 0.5s ease-in;
-}
-body.loaded {
-  opacity: 1;
-}
-
 /* Navbar in vibrant colors */
 .navbar {
   background-color: #ff6b6b !important;
