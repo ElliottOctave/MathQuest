@@ -34,7 +34,7 @@ export function setupGame({
   async function changeDifficulty() {
     console.log("Changing difficulty...");
     if (gameId) {
-      const newDifficulty = await calculateDifficulty(gameId);
+      const newDifficulty = await getDifficulty(gameId);
       console.log("New difficulty level:", newDifficulty);
       difficulty = newDifficulty;
     }
@@ -58,7 +58,7 @@ export function setupGame({
           win.show();
           launchConfetti();
           if (gameId) {
-            updatePerformance(gameId);
+            updatePerformance(gameId, mistakes, startTime);
           }
         }, 500);
       }
@@ -77,7 +77,7 @@ export function setupGame({
     mistakes = 0;
     document.getElementById(progressBarId).style.width = "0%";
     if (gameId) {
-      const newDifficulty = await calculateDifficulty(gameId);
+      const newDifficulty = await getDifficulty(gameId);
       console.log("New difficulty level:", newDifficulty);
       difficulty = newDifficulty;
     }
@@ -122,8 +122,47 @@ import { auth, db } from "../../../firebase.js";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 
-export async function updatePerformance(gameId) {
-  console.log("[updatePerformance] Called for gameId:", gameId);
+export async function getDifficulty(gameId) {
+  return new Promise((resolve) => {
+    auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        console.log("❗ No logged-in user, defaulting to Easy difficulty");
+        resolve(1);
+        return;
+      }
+      
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        resolve(1);
+        return;
+      }
+
+      const userData = userSnap.data();
+      const difficultyField = `difficulty_${gameId}`;
+      const storedDifficulty = userData[difficultyField] ?? 1;
+      console.log("Stored difficulty:", storedDifficulty);
+
+      // Convert 1–9 to tier: 1–3 => 1 (Easy), 4–6 => 2 (Medium), 7–9 => 3 (Hard)
+      if (storedDifficulty <= 3) {
+        console.log("Difficulty level: Easy");
+        resolve(1);
+        return;
+      }
+      if (storedDifficulty <= 6) {
+        console.log("Difficulty level: Medium");
+        resolve(2);
+        return;
+      }
+      console.log("Difficulty level: Hard");
+      resolve(3);
+    });
+  });
+}
+
+
+export async function updatePerformance(gameId, mistakes, startTime) {
   if (!auth.currentUser) return;
 
   const userRef = doc(db, "users", auth.currentUser.uid);
@@ -134,6 +173,7 @@ export async function updatePerformance(gameId) {
   const userData = userSnap.data();
 
   const timeField = `time_${gameId}`;
+  const difficultyField = `difficulty_${gameId}`;
   const retryField = `retryFrequency_${gameId}`;
 
   const endTime = Date.now();
@@ -147,6 +187,7 @@ export async function updatePerformance(gameId) {
   let newCoins = userData['coins'] || 0;
   newCoins += 1; // Add 1 coin
 
+  const newDifficulty = await calculateDifficulty(gameId, mistakes, timeTaken);
   const newTimeStack = [...(userData[timeField] || []), timeTaken];
   const newRetryStack = [...(userData[retryField] || []), mistakes];
 
@@ -158,18 +199,20 @@ export async function updatePerformance(gameId) {
   console.log(`📥 New Times: ${trimmedTimeStack}`);
   console.log(`📥 New Retries: ${trimmedRetryStack}`);
   console.log(`💰 Updated Coins: ${newCoins}`);
+  console.log(`💡 Updated Difficulty: ${newDifficulty}`);
 
   await updateDoc(userRef, {
     [timeField]: trimmedTimeStack,
     [retryField]: trimmedRetryStack,
+    [difficultyField]: newDifficulty,
     ['coins']: newCoins // Update coins in Firestore
   });
 
   console.log("✅ Game stats updated in Firestore!");
 }
 
-async function calculateDifficulty(gameId) {
-  console.log("[calculateDifficulty] Called for gameId:", gameId);
+
+async function calculateDifficulty(gameId, mistakes, timeTaken) {
 
   return new Promise((resolve) => {
     onAuthStateChanged(auth, async (user) => {
@@ -191,31 +234,36 @@ async function calculateDifficulty(gameId) {
       }
 
       const userData = userSnap.data();
-      const timeStack = userData[`time_${gameId}`] || [];
-      const retryStack = userData[`retryFrequency_${gameId}`] || [];
+      const userDifficulty = userData[`difficulty_${gameId}`] || 1;
 
-      if (timeStack.length === 0 || retryStack.length === 0) {
-        console.log("❗ Not enough game data, defaulting to Easy difficulty");
-        resolve(1);
-        return;
+      console.log(`🕒 time taken: ${timeTaken}s`);
+      console.log(`❌ mistakes: ${mistakes}`);
+      console.log(`🎚️ Current difficulty: ${userDifficulty}`);
+
+       let delta = 0;
+
+      // Very good performance
+      if (timeTaken <= 20 && mistakes === 0) {
+        delta = 2;
+      }
+      // Good performance
+       else if (timeTaken <= 30 && mistakes <= 2) {
+        delta = 1;
+      }
+      // Poor performance
+      else if (timeTaken > 90 || mistakes >= 5) {
+        delta = -2;
+      }
+      // Below average
+      else if (timeTaken > 60 || mistakes >= 3) {
+        delta = -1;
       }
 
-      const avgTime = timeStack.reduce((a, b) => a + b, 0) / timeStack.length;
-      const avgMistakes = retryStack.reduce((a, b) => a + b, 0) / retryStack.length;
+      let newDifficulty = userDifficulty + delta;
+      newDifficulty = Math.max(1, Math.min(9, newDifficulty)); // Clamp to [1, 9]
 
-      console.log(`📊 Calculated average time: ${avgTime.toFixed(2)}s`);
-      console.log(`📊 Calculated average mistakes: ${avgMistakes.toFixed(2)}`);
-
-      if (avgTime <= 30 && avgMistakes <= 1) {
-        console.log("🚀 Selected Hard difficulty (3)");
-        resolve(3);
-      } else if (avgTime <= 60 && avgMistakes <= 3) {
-        console.log("⚡ Selected Medium difficulty (2)");
-        resolve(2);
-      } else {
-        console.log("🐢 Selected Easy difficulty (1)");
-        resolve(1);
-      }
+      console.log(`📈 Adjusted difficulty: ${newDifficulty} (Δ${delta})`);
+      resolve(newDifficulty);
     });
   });
 }
