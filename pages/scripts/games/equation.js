@@ -1,10 +1,11 @@
 import { setupGame, updatePerformance } from '../template/gameTemplate.js';
 
-let difficulty = 1;
 let progress = 0;
 let currentEquation = [];
 let correctEquation = [];
 let missingValues = [];
+let mistakes = 0;
+let startTime = Date.now();
 
 // Initialize the game with the necessary functions
 const game = setupGame({
@@ -19,6 +20,8 @@ window.changeDifficulty = game.changeDifficulty;
 window.submitAnswer = submitAnswer;
 window.restartGame = () => {
   progress = 0;
+  mistakes = 0;
+  startTime = Date.now();
   document.getElementById("progressBar").style.width = "0%";
   game.restartGame(); // This calls the restart function from the game template
 };
@@ -160,13 +163,14 @@ export function submitAnswer() {
         const winModal = new bootstrap.Modal(document.getElementById("winModal"));
         winModal.show();
         launchConfetti();
-        updatePerformance("game7");
+        updatePerformance("game7", mistakes, startTime);
       }, 600);
     } else {
       setTimeout(generateEquation, 1200);
     }
 
   } else {
+    mistakes++;
     showFeedback("❌ Try again!", false);
   }
 }
