@@ -8,6 +8,8 @@ let draggedHour = 0;
 let draggedMinute = 0;
 let draggingHand = null;
 const synth = window.speechSynthesis;
+let  mistakes = 0;
+let startTime = Date.now();
 
 // Initialize the game with the necessary functions
 const game = setupGame({
@@ -22,6 +24,8 @@ window.changeDifficulty = game.changeDifficulty;
 window.restartGame = () => {
   document.getElementById("progressBar").style.width = "0%";
   progress = 0;
+  mistakes = 0;
+  startTime = Date.now();
   game.restartGame(); // This calls the restart function from the game template
 };
 window.adjustHour = adjustHour;
@@ -149,7 +153,7 @@ function drawClock() {
   console.log(game_difficulty);
   if (game_difficulty === 3) {
     canvas.onmousedown = startDrag;
-    canvas.onmousemove = dragMove;àà
+    canvas.onmousemove = dragMove;
     canvas.onmouseup = stopDrag;
   } else {
     canvas.onmousedown = null;
@@ -237,7 +241,7 @@ function correctFeedback() {
     setTimeout(() => {
       const win = new bootstrap.Modal(document.getElementById("winModal"));
       win.show();
-      updatePerformance("game6");
+      updatePerformance("game6", mistakes, startTime);
       launchConfetti();
     }, 500);
   } else {
@@ -249,6 +253,7 @@ function correctFeedback() {
 
 // Function to give feedback for a wrong answer
 function wrongFeedback() {
+  mistakes++;
   document.getElementById("feedback").innerHTML = `<span class="incorrect">❌ Try again!</span>`;
 }
 
