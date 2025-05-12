@@ -52,25 +52,25 @@ window.restartGame = game.restartGame;
 window.showHelp = function () {
   const total = num1 + num2;
 
-  // Sla over als één van de twee nul is
   if (num1 === 0 || num2 === 0) {
-    alert("Geen tip beschikbaar voor deze oefening, probeer de volgende!");
+    alert("No tip available for this question. Try the next one!");
     return;
   }
 
-  const apples = Array(num1).fill('🍎');
-  const berries = Array(num2).fill('🍓');
+  const appleImg = `<img src="/pages/assets/addition/apple.webp" width="30" style="margin: 2px;">`;
+  const berryImg = `<img src="/pages/assets/addition/berry.png" width="30" style="margin: 2px;">`;
+
+  const apples = Array(num1).fill(appleImg);
+  const berries = Array(num2).fill(berryImg);
   const fruitIcons = [...apples, ...berries];
 
-  // Visuele opgave met fruit en plus-teken
-  const visualEquation = `${apples.join(' ')} + ${berries.join(' ')} = ?`;
+  const visualEquation = `${apples.join('')} + ${berries.join('')} = ?`;
 
-  // Genereer HTML voor uitgelijnde getallen en fruitjes
   const cells = fruitIcons.map((fruit, i) => {
     return `
       <div style="display: flex; flex-direction: column; align-items: center; margin: 4px;">
         <div style="font-weight: bold;">${i + 1}</div>
-        <div style="font-size: 1.5rem;">${fruit}</div>
+        <div>${fruit}</div>
       </div>
     `;
   });
@@ -78,18 +78,21 @@ window.showHelp = function () {
   const helpBox = document.createElement('div');
   helpBox.innerHTML = `
     <div style="position: fixed; bottom: 80px; right: 20px; background: #fff9c4; padding: 15px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); max-width: 360px; z-index: 1001;">
-      <h5>Voorbeeldje:</h5>
-      <p><strong>Opgave:</strong><br><span style="font-size: 1.4rem;">${visualEquation}</span></p>
-      <p>👉 Zet al het fruit op een rijtje en tel ze één voor één!</p>
+      <h5>Example:</h5>
+      <p><em>This little example will help you understand how to solve it!</em></p>
+
+      <p><strong>Question:</strong><br>${visualEquation}</p>
+
+      <p><strong>Tip:</strong> Line up the fruit and count them one by one.</p>
 
       <div style="display: flex; flex-wrap: wrap; justify-content: flex-start; margin: 10px 0;">
         ${cells.join('')}
       </div>
 
-      <p>🔔 Tel tot het einde.<br>
-      ✅ Dus: ${num1} + ${num2} = <strong>${total}</strong> 🎉</p>
+      <p><strong>Count until the end.</strong><br>
+      So: ${num1} + ${num2} = <strong>${total}</strong></p>
 
-      <button onclick="this.parentElement.remove()" class="btn btn-sm btn-outline-secondary mt-2">Sluiten</button>
+      <button onclick="this.parentElement.remove()" class="btn btn-sm btn-outline-secondary mt-2">Close</button>
     </div>
   `;
   document.body.appendChild(helpBox);
