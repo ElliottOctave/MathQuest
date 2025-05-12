@@ -4,6 +4,8 @@ let game_difficulty = 1;
 let progress = 0;
 let coins = 0;
 let gems = 0;
+let mistakes = 0;
+let startTime = Date.now();
 const synth = window.speechSynthesis;
 
 // Initialize the game with the necessary functions
@@ -20,6 +22,8 @@ window.submitAnswer = submitAnswer;
 
 // Expose restartGame to reset progress and call the restart function from the game template
 window.restartGame = () => {
+  mistakes = 0;
+  startTime = Date.now();
   progress = 0;
   document.getElementById("progressBar").style.width = "0%";
   game.restartGame(); // This calls the restart function from the game template
@@ -82,7 +86,7 @@ export function submitAnswer() {
         const win = new bootstrap.Modal(document.getElementById("winModal"));
         win.show();
         launchConfetti();
-        updatePerformance("game8");
+        updatePerformance("game8", mistakes, startTime);
       }, 600);
     } else {
       console.log(game_difficulty);
@@ -91,6 +95,7 @@ export function submitAnswer() {
       }, 1500);
     }
   } else {
+    mistakes++;
     feedback.innerHTML = `<span class="incorrect">❌ Oops! Try again!</span>`;
   }
 }
