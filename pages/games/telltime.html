@@ -22,16 +22,6 @@
     <button onclick="readStory()" class="sound-btn">🔊</button>
   </div>
 
-  <!-- Difficulty -->
-  <div class="text-center mb-4">
-    <label for="difficultySelect" class="form-label">Choose Difficulty:</label>
-    <select id="difficultySelect" class="form-select w-50 mx-auto" onchange="changeDifficulty()">
-      <option value="1">Easy (full hours)</option>
-      <option value="2">Medium (half-hours too)</option>
-      <option value="3">Hard (drag hands)</option>
-    </select>
-  </div>
-
   <!-- Clocks -->
   <div class="row justify-content-center align-items-center mb-4" id="clockArea">
     <div class="col-md-5 text-center">
@@ -81,6 +71,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<script src="../scripts/games/telltime.js"></script>
+<script type="module" src="../scripts/games/telltime.js"></script>
 </body>
 </html>

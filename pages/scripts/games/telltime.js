@@ -1,4 +1,6 @@
-let difficulty = 1;
+import { setupGame, updatePerformance } from '../template/gameTemplate.js';
+
+let game_difficulty = 1;
 let progress = 0;
 let correctHour = 0;
 let correctMinute = 0;
@@ -7,37 +9,45 @@ let draggedMinute = 0;
 let draggingHand = null;
 const synth = window.speechSynthesis;
 
-window.onload = () => {
-  changeDifficulty();
-};
+// Initialize the game with the necessary functions
+const game = setupGame({
+  generateQuestionFn: generateQuestion,
+  checkAnswerFn: submitAnswer,
+  getFeedbackMessageFn: correctFeedback,
+  gameId: "game6", // Unique game ID for tracking
+});
 
-function changeDifficulty() {
-  difficulty = parseInt(document.getElementById("difficultySelect").value);
-  restartGame();
-}
-
-function restartGame() {
-  progress = 0;
+window.readStory = game.readStory;
+window.changeDifficulty = game.changeDifficulty;
+window.restartGame = () => {
   document.getElementById("progressBar").style.width = "0%";
-  generateQuestion();
-}
+  progress = 0;
+  game.restartGame(); // This calls the restart function from the game template
+};
+window.adjustHour = adjustHour;
+window.adjustMinute = adjustMinute;
+window.submitAnswer = submitAnswer;
 
-function generateQuestion() {
-  document.getElementById("feedback").innerHTML = "";
+window.onload = () => changeDifficulty();
+
+// Function to generate the question
+function generateQuestion(difficulty) {
+  game_difficulty = difficulty || 1; // Default to 1 if not provided
+  console.log("Generating question for difficulty:", difficulty);
   const digitalArea = document.getElementById("digitalArea");
 
-  if (difficulty === 1) {
+  if (game_difficulty === 1) {
     correctHour = Math.floor(Math.random() * 12) + 1;
     correctMinute = 0;
-  } else if (difficulty === 2) {
+  } else if (game_difficulty === 2) {
     correctHour = Math.floor(Math.random() * 12) + 1;
     correctMinute = Math.random() < 0.5 ? 0 : 30;
   } else {
     correctHour = Math.floor(Math.random() * 12) + 1;
     correctMinute = Math.random() < 0.5 ? 0 : 30;
   }
-
-  if (difficulty < 3) {
+  console.log(game_difficulty, correctHour, correctMinute);
+  if (game_difficulty < 3) {
     digitalArea.innerHTML = `
       <div class="digital-clock">
         <div class="time-section">
@@ -66,11 +76,12 @@ function generateQuestion() {
         </div>
       </div>
     `;
-  }  
+  }
 
   drawClock();
 }
 
+// Function to adjust hour
 function adjustHour(change) {
     const display = document.getElementById('hourDisplay');
     let value = parseInt(display.textContent) || 0;
@@ -78,22 +89,24 @@ function adjustHour(change) {
     if (value === 0) value = 12;
     display.textContent = value;
   }
-  
-  function adjustMinute(change) {
-    const display = document.getElementById('minuteDisplay');
-    let value = parseInt(display.textContent) || 0;
-    value = (value === 30 ? 30 : 0);
-    value = (value + (change * 30) + 60) % 60; // 0 or 30 only
-    display.textContent = value.toString().padStart(2, '0');
-  }
-  
-  function updateDigitalDisplay() {
-    document.getElementById('hourDisplay').textContent = '0';
-    document.getElementById('minuteDisplay').textContent = '00';
-  }  
 
+// Function to adjust minute
+function adjustMinute(change) {
+  const display = document.getElementById('minuteDisplay');
+  let value = parseInt(display.textContent) || 0;
+  value = (value === 30 ? 30 : 0);
+  value = (value + (change * 30) + 60) % 60; // 0 or 30 only
+  display.textContent = value.toString().padStart(2, '0');
+}
+
+// Function to update the digital display
+function updateDigitalDisplay() {
+  document.getElementById('hourDisplay').textContent = '0';
+  document.getElementById('minuteDisplay').textContent = '00';
+}
+
+// Function to draw the clock
 function drawClock() {
-  
   const canvas = document.getElementById("analogClock");
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, 200, 200);
@@ -112,8 +125,8 @@ function drawClock() {
     ctx.fillText(i, 100 + Math.cos(angle) * 70, 100 + Math.sin(angle) * 70);
   }
 
-  let hour = difficulty === 3 ? draggedHour : correctHour;
-  let minute = difficulty === 3 ? draggedMinute : correctMinute;
+  let hour = game_difficulty === 3 ? draggedHour : correctHour;
+  let minute = game_difficulty === 3 ? draggedMinute : correctMinute;
 
   drawHand(ctx, ((hour % 12) + minute / 60) * 30, 50, 6);
   drawHand(ctx, minute * 6, 70, 3);
@@ -132,11 +145,11 @@ function drawClock() {
     ctx.strokeStyle = "#333";
     ctx.lineWidth = 2;
     ctx.stroke();
-}
-
-  if (difficulty === 3) {
+  }
+  console.log(game_difficulty);
+  if (game_difficulty === 3) {
     canvas.onmousedown = startDrag;
-    canvas.onmousemove = dragMove;
+    canvas.onmousemove = dragMove;àà
     canvas.onmouseup = stopDrag;
   } else {
     canvas.onmousedown = null;
@@ -145,6 +158,7 @@ function drawClock() {
   }
 }
 
+// Function to draw the hands on the clock
 function drawHand(ctx, angle, length, width) {
   ctx.beginPath();
   ctx.lineWidth = width;
@@ -154,14 +168,17 @@ function drawHand(ctx, angle, length, width) {
   ctx.stroke();
 }
 
+// Function to start dragging the hands
 function startDrag(e) {
   draggingHand = detectHand(e);
 }
 
+// Function to stop dragging
 function stopDrag(e) {
   draggingHand = null;
 }
 
+// Function to move the hands while dragging
 function dragMove(e) {
   if (!draggingHand) return;
 
@@ -181,6 +198,7 @@ function dragMove(e) {
   drawClock();
 }
 
+// Function to detect which hand is being dragged
 function detectHand(e) {
   const rect = e.target.getBoundingClientRect();
   const x = e.clientX - rect.left - 100;
@@ -190,8 +208,9 @@ function detectHand(e) {
   return dist < 60 ? "hour" : "minute";
 }
 
-function submitAnswer() {
-  if (difficulty < 3) {
+// Function to submit the answer
+export function submitAnswer() {
+  if (game_difficulty < 3) {
     const input = `${parseInt(document.getElementById("hourDisplay").textContent)}:${document.getElementById("minuteDisplay").textContent}`;
     const correctString = `${correctHour}:${correctMinute.toString().padStart(2, '0')}`;
     if (input === correctString) {
@@ -208,6 +227,7 @@ function submitAnswer() {
   }
 }
 
+// Function to give feedback for a correct answer
 function correctFeedback() {
   document.getElementById("feedback").innerHTML = `<span class="correct">✅ Correct!</span>`;
   progress += 20;
@@ -217,29 +237,22 @@ function correctFeedback() {
     setTimeout(() => {
       const win = new bootstrap.Modal(document.getElementById("winModal"));
       win.show();
+      updatePerformance("game6");
       launchConfetti();
     }, 500);
   } else {
     setTimeout(() => {
-      generateQuestion();
+      generateQuestion(game_difficulty);
     }, 1500);
   }
 }
 
+// Function to give feedback for a wrong answer
 function wrongFeedback() {
   document.getElementById("feedback").innerHTML = `<span class="incorrect">❌ Try again!</span>`;
 }
 
-function readStory() {
-  if (synth.speaking) synth.cancel();
-  const text = document.getElementById("storyText").textContent;
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "en-US";
-  utterance.rate = 0.9;
-  utterance.pitch = 1;
-  synth.speak(utterance);
-}
-
+// Function to launch confetti when the game is won
 function launchConfetti() {
   const duration = 2000;
   const end = Date.now() + duration;
