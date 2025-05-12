@@ -5,6 +5,7 @@ let numToSteal = 0;
 let fruitArray = [];
 
 function generateQuestion(difficulty) {
+  console.log("Generating question for difficulty:", difficulty);
   const max = difficulty === 1 ? 5 : difficulty === 2 ? 10 : 20;
   totalFruits = Math.floor(Math.random() * (max - 1)) + 2;
   numToSteal = Math.floor(Math.random() * (totalFruits - 1)) + 1;
