@@ -251,14 +251,14 @@ async function calculateDifficulty(gameId, mistakes, timeTaken) {
         delta = 1;
       }
       // Poor performance
-      else if (timeTaken > 90 || mistakes >= 5) {
+      else if (timeTaken > 90 && mistakes > 1 || mistakes >= 5) {
         delta = -2;
       }
       // Below average
       else if (timeTaken > 60 || mistakes >= 3) {
         delta = -1;
       }
-
+      // else no change
       let newDifficulty = userDifficulty + delta;
       newDifficulty = Math.max(1, Math.min(9, newDifficulty)); // Clamp to [1, 9]
 
