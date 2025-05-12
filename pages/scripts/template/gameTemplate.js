@@ -71,6 +71,15 @@ export function setupGame({
   }
 
   async function restartGame() {
+    // Show help button only if previous level had 3+ mistakes
+    if (mistakes >= 3) {
+      const helpBtn = document.getElementById("helpButton");
+      if (helpBtn) helpBtn.style.display = "block";
+    } else {
+      const helpBtn = document.getElementById("helpButton");
+      if (helpBtn) helpBtn.style.display = "none";
+    }
+  
     progress = 0;
     startTime = Date.now();
     mistakes = 0;
@@ -82,6 +91,7 @@ export function setupGame({
     }
     generateQuestionFn(difficulty);
   }
+  
 
   function launchConfetti() {
     const duration = 2000;
