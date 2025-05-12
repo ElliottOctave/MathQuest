@@ -1,23 +1,37 @@
-let difficulty = 1;
+import { setupGame, updatePerformance } from '../template/gameTemplate.js';
+
+let game_difficulty = 1;
 let progress = 0;
 const synth = window.speechSynthesis;
+let mistakes = 0;
+let startTime = Date.now();
 
-window.onload = () => {
-  changeDifficulty();
+// Initialize the game with the necessary functions
+const game = setupGame({
+  generateQuestionFn: generateQuestion,
+  checkAnswerFn: checkAnswer,
+  getFeedbackMessageFn: getFeedbackMessage,
+  gameId: "game9", // Unique game ID for tracking
+});
+
+window.readStory = game.readStory;
+window.changeDifficulty = game.changeDifficulty;
+
+// Expose restartGame to reset progress and call the restart function from the game template
+window.restartGame = () => {
+  progress = 0;
+  mistakes = 0;
+  startTime = Date.now();
+  document.getElementById("progressBar").style.width = "0%";
+  game.restartGame(); // This calls the restart function from the game template
 };
 
-function changeDifficulty() {
-  difficulty = parseInt(document.getElementById("difficultySelect").value);
-  restartGame();
-}
+window.onload = () => game.changeDifficulty();
 
-function restartGame() {
-  progress = 0;
-  document.getElementById("progressBar").style.width = "0%";
-  generateQuestion();
-}
 
-function generateQuestion() {
+// Function to generate the question
+function generateQuestion(difficulty) {
+  game_difficulty = difficulty || 1; // Default to 1 if not provided
   document.getElementById("feedback").innerHTML = "";
   const chartArea = document.getElementById("chartArea");
   chartArea.innerHTML = "";
@@ -89,7 +103,7 @@ function generateQuestion() {
         if (item.label === correctAnswer) {
           correctFeedback();
         } else {
-          document.getElementById("feedback").innerHTML = `<span class="incorrect">❌ Try again!</span>`;
+          wrongFeedback();
         }
       };
       choices.appendChild(btn);
@@ -105,7 +119,7 @@ function generateQuestion() {
         if (opt.toString() === correctAnswer) {
           correctFeedback();
         } else {
-          document.getElementById("feedback").innerHTML = `<span class="incorrect">❌ Try again!</span>`;
+          wrongFeedback();
         }
       };
       choices.appendChild(btn);
@@ -113,15 +127,18 @@ function generateQuestion() {
   }
 }
 
+// Function to generate random integer in a range
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+// Function to generate random pastel colors
 function randomPastelColor() {
   const colors = ["#ffd6d6", "#d6ffd6", "#d6d6ff", "#fff6d6", "#d6fff6"];
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
+// Function to shuffle an array
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -130,12 +147,14 @@ function shuffleArray(array) {
   return array;
 }
 
+// Function to pick two random items from an array
 function pickTwoRandom(arr) {
   const shuffled = [...arr];
   shuffleArray(shuffled);
   return [shuffled[0], shuffled[1]];
 }
 
+// Function to generate near numbers for the hard difficulty
 function generateNearNumbers(correct) {
   const nums = new Set([correct]);
   while (nums.size < 4) {
@@ -144,6 +163,7 @@ function generateNearNumbers(correct) {
   return shuffleArray([...nums]);
 }
 
+// Function for correct answer feedback
 function correctFeedback() {
   document.getElementById("feedback").innerHTML = `<span class="correct">✅ Correct!</span>`;
   progress += 20;
@@ -153,6 +173,7 @@ function correctFeedback() {
     setTimeout(() => {
       const win = new bootstrap.Modal(document.getElementById("winModal"));
       win.show();
+      updatePerformance("game9", mistakes, startTime);
       launchConfetti();
     }, 500);
   } else {
@@ -162,16 +183,13 @@ function correctFeedback() {
   }
 }
 
-function readStory() {
-  if (synth.speaking) synth.cancel();
-  const text = document.getElementById("storyText").textContent;
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "en-US";
-  utterance.rate = 0.9;
-  utterance.pitch = 1;
-  synth.speak(utterance);
+// Function to give wrong answer feedback
+function wrongFeedback() {
+  mistakes++;
+  document.getElementById("feedback").innerHTML = `<span class="incorrect">❌ Try again!</span>`;
 }
 
+// Function to launch confetti when the game is won
 function launchConfetti() {
   const duration = 2000;
   const end = Date.now() + duration;
@@ -196,4 +214,16 @@ function launchConfetti() {
       requestAnimationFrame(frame);
     }
   })();
+}
+
+// Function to check if the answer is correct (for template integration)
+function checkAnswer(userInput) {
+  return { correct: userInput === correctAnswer, correctAnswer: correctAnswer };
+}
+
+// Function to get the feedback message (for template integration)
+function getFeedbackMessage(correct, correctAnswer) {
+  return correct
+    ? `✅ Great job! The correct answer is ${correctAnswer}.`
+    : `❌ Oops! Try again. The correct answer is ${correctAnswer}.`;
 }
