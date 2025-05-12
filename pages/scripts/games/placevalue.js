@@ -1,8 +1,10 @@
 import { setupGame, updatePerformance } from '../template/gameTemplate.js';
 
-let difficulty = 1;
 let target = 0;
 let basket = [];
+let mistakes = 0;
+let startTime = Date.now();
+let gameDifficulty = 1;
 
   // Initialize the game with the necessary functions
   const game = setupGame({
@@ -26,11 +28,15 @@ let basket = [];
     game.restartGame(); // This calls the restart function from the game template
     target = 0;
     basket = [];
+    mistakes = 0;
+    startTime = Date.now();
     document.getElementById("basket").innerHTML = "";
     document.getElementById("feedback").innerHTML = "";
   };
 
 function generateQuestion(difficulty) {
+  gameDifficulty = difficulty || 1; // Default to 1 if not provided
+  console.log("Generating question for difficulty:", difficulty);
   let max;
   if (difficulty === 1) max = 30;
   else if (difficulty === 2) max = 60;
@@ -94,14 +100,13 @@ export function submitAnswer() {
         const winModal = new bootstrap.Modal(document.getElementById("winModal"));
         winModal.show();
         launchConfetti();
-        updatePerformance("game4");
+        updatePerformance("game4", mistakes, startTime);
       }, 600);
     } else {
       setTimeout(() => {
-        console.log(difficulty);
         basket = [];
         document.getElementById("basket").innerHTML = "";
-        generateQuestion();
+        generateQuestion(gameDifficulty);
       }, 1500);
     }
   } else {
