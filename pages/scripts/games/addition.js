@@ -8,11 +8,18 @@ function generateQuestion(d) {
   if (!gameStarted) gameStarted = true;
   difficulty = d; // store current difficulty
   const max = difficulty === 1 ? 5 : difficulty === 2 ? 10 : 20;
-  num1 = Math.floor(Math.random() * (max + 1));
-  num2 = Math.floor(Math.random() * (max - num1 + 1));
+
+  // num1 tussen 1 en max
+  num1 = Math.floor(Math.random() * max) + 1;
+
+  // num2 tussen 1 en (max - num1 + 1), maar minstens 1
+  const remaining = Math.max(1, max - num1 + 1);
+  num2 = Math.floor(Math.random() * remaining) + 1;
+
   document.getElementById("visual-num1").innerHTML = renderFruits(num1, "apple.webp");
   document.getElementById("visual-num2").innerHTML = renderFruits(num2, "berry.png");
 }
+
 
 function renderFruits(n, type) {
   const src = `../assets/addition/${type}`;
