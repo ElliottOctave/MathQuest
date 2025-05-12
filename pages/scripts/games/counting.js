@@ -4,6 +4,8 @@ let difficulty = 1;
 let startNumber = 1;
 let currentTarget = 1;
 let totalClicks = 0;
+let mistakes = 0;
+let startTime = Date.now();
 
   // Call the setupGame with required functions
   const game = setupGame({
@@ -16,7 +18,7 @@ let totalClicks = 0;
   window.readStory = game.readStory;
   window.changeDifficulty = game.changeDifficulty;
   window.submitAnswer = game.submitAnswer;
-  window.restartGame = game.restartGame;
+  window.restartGame = restartGame;
 
   window.onload = () => changeDifficulty();
 
@@ -65,7 +67,7 @@ function handleClick(num, balloon) {
 
     if (totalClicks >= 10) {
       setTimeout(() => {
-        updatePerformance("game3");
+        updatePerformance("game3", mistakes, startTime);
         const winModal = new bootstrap.Modal(document.getElementById("winModal"));
         winModal.show();
         launchConfetti();
@@ -73,6 +75,7 @@ function handleClick(num, balloon) {
     }
   } else {
     balloon.classList.add("wrong");
+    mistakes++;
     setTimeout(() => balloon.classList.remove("wrong"), 500);
   }
 }
@@ -85,8 +88,10 @@ function shuffleArray(arr) {
 // Function to restart the game
 function restartGame() {
   totalClicks = 0;
+  mistakes = 0;
+  startTime = Date.now();
   document.getElementById("progressBar").style.width = "0%";
-  generateQuestion(difficulty);
+  game.restartGame();
 }
 
 // Function to check the answer (for template integration)
