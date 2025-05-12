@@ -1,9 +1,12 @@
-import { setupGame } from '../template/gameTemplate.js';
+import { setupGame, getDifficulty } from '../template/gameTemplate.js';
 
 let num1, num2;
+let difficulty = 1; // Default difficulty
 let gameStarted = false; // Track if the game has started
 
-function generateQuestion(difficulty) {
+async function generateQuestion() {
+  difficulty = await getDifficulty("game1");
+  console.log("Generating question for difficulty:", difficulty);
   if (!gameStarted) {
     gameStarted = true;
   }
