@@ -1,11 +1,12 @@
 import { setupGame, updatePerformance } from '../template/gameTemplate.js';
 
-let difficulty = 1;
+let game_difficulty = 1;
 let progress = 0;
 let flags = [];
 let selectedOrder = [];
 let synth = window.speechSynthesis;
-
+let mistakes = 0;
+let startTime = Date.now();
 
   // Initialize the game with the necessary functions
   const game = setupGame({
@@ -17,7 +18,13 @@ let synth = window.speechSynthesis;
 
   window.readStory = game.readStory;
   window.changeDifficulty = game.changeDifficulty;
-  window.restartGame = game.restartGame;
+  window.restartGame = window.restartGame = () => {
+  progress = 0;
+  mistakes = 0;
+  startTime = Date.now();
+  document.getElementById("progressBar").style.width = "0%";
+  game.restartGame(); // This calls the restart function from the game template
+};
   window.submitAnswer = submitAnswer;
 
   window.onload = () => changeDifficulty();
@@ -25,6 +32,7 @@ let synth = window.speechSynthesis;
 // Function to generate the question (i.e., create the flags)
 function generateQuestion(difficulty) {
   console.log("Generating question for difficulty:", difficulty);
+  game_difficulty = difficulty || 1; // Default to 1 if not provided
   const flagsArea = document.getElementById("flagsArea");
   flagsArea.innerHTML = "";
   document.getElementById("feedback").innerHTML = "";
@@ -105,7 +113,7 @@ function correctAnswer() {
     setTimeout(() => {
       const win = new bootstrap.Modal(document.getElementById("winModal"));
       win.show();
-      updatePerformance("game5");
+      updatePerformance("game5", mistakes, startTime);
       launchConfetti();
     }, 500);
   } else {
@@ -115,12 +123,17 @@ function correctAnswer() {
   }
 }
 
+function wrongAnswer() {
+  mistakes++;
+  document.getElementById("feedback").innerHTML = `<span class="incorrect">❌ Try again!</span>`;
+}
+
 // Update the task instructions based on difficulty
 function updateTaskText() {
   const task = document.getElementById("taskText");
-  if (difficulty === 1) {
+  if (game_difficulty === 1) {
     task.innerHTML = "Click the shortest flag!";
-  } else if (difficulty === 2) {
+  } else if (game_difficulty === 2) {
     task.innerHTML = "Click the tallest flag!";
   } else {
     task.innerHTML = "Drag the flags from shortest ➔ tallest!";
