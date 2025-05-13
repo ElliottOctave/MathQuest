@@ -1,4 +1,4 @@
-import { setupGame, updatePerformance } from '../template/gameTemplate.js';
+import { setupGame, updatePerformance, getDifficulty } from '../template/gameTemplate.js';
 
 let game_difficulty = 1;
 let progress = 0;
@@ -7,13 +7,14 @@ let gems = 0;
 let mistakes = 0;
 let startTime = Date.now();
 const synth = window.speechSynthesis;
+let difficulty;
 
 // Initialize the game with the necessary functions
 const game = setupGame({
   generateQuestionFn: generateQuestion,
   checkAnswerFn: submitAnswer,
   getFeedbackMessageFn: () => {},
-  gameId: "game8", // Unique game ID for tracking
+  gameId: "game6", // Unique game ID for tracking
 });
 
 window.readStory = game.readStory;
@@ -33,9 +34,9 @@ window.restartGame = () => {
 window.onload = () => changeDifficulty();
 
 // Function to generate the question
-function generateQuestion(difficulty) {
-  game_difficulty = difficulty || 1; // Default to 1 if not provided
-  console.log("Generating question for difficulty:", game_difficulty);
+async function generateQuestion() {
+  difficulty = await getDifficulty("game6");
+  console.log("Generating question for difficulty:", difficulty);
   document.getElementById("answer").value = "";
   document.getElementById("treasurePile").innerHTML = "";
 
@@ -96,6 +97,7 @@ export function submitAnswer() {
     }
   } else {
     mistakes++;
+    game.registerMistake();
     feedback.innerHTML = `<span class="incorrect">❌ Oops! Try again!</span>`;
   }
 }
@@ -126,3 +128,80 @@ function launchConfetti() {
     }
   })();
 }
+
+window.showHelp = function () {
+  const total = coins * 10 + gems;
+
+  // Maak voorbeeldrij met afbeeldingen
+  const exampleVisual = [];
+
+  for (let i = 0; i < coins; i++) {
+    exampleVisual.push(`<img src="../assets/tensones/coinbag.webp" width="40" style="margin: 3px;">`);
+  }
+
+  for (let i = 0; i < gems; i++) {
+    exampleVisual.push(`<img src="../assets/tensones/gem.png" width="32" style="margin: 3px;">`);
+  }
+
+  const visualRow = `
+    <div style="text-align: center; margin-bottom: 15px;">
+      ${exampleVisual.join('')}
+    </div>
+  `;
+
+  // Uitleg stappen
+  const steps = [];
+
+  if (coins > 0) {
+    steps.push(`
+      <div style="margin-bottom: 14px;">
+        <span>Captain Cooper found <strong>${coins}</strong> treasure bag${coins > 1 ? "s" : ""}.</span><br>
+        Each <img src="../assets/tensones/coinbag.webp" width="20" style="vertical-align: middle;"> has 10 treasures.<br>
+        So that’s <strong>${coins * 10} treasures</strong>.
+      </div>
+    `);
+  }
+
+  if (gems > 0) {
+    steps.push(`
+      <div style="margin-bottom: 14px;">
+        <span>He also found <strong>${gems}</strong> gem${gems > 1 ? "s" : ""}.</span><br>
+        Each <img src="../assets/tensones/gem.png" width="18" style="vertical-align: middle;"> is worth 1 treasure.<br>
+        That’s <strong>${gems} treasures</strong>.
+      </div>
+    `);
+  }
+
+  steps.push(`
+    <hr>
+    <p><strong>Let’s count all the treasures together!</strong></p>
+    <p>${coins * 10} from the bags + ${gems} from the gems = <strong>${total} treasures</strong></p>
+    <p><strong>That’s how we get ${total} treasures!</strong></p>
+  `);
+
+  // Bouw het tipvenster
+  const tipBox = document.createElement("div");
+  tipBox.innerHTML = `
+    <div style="
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background: #fff9c4;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      max-width: 420px;
+      max-height: 75vh;
+      overflow-y: auto;
+      z-index: 1001;
+      font-family: sans-serif;
+    ">
+      <h5 style="margin-top: 0;">Tip:</h5>
+      <p>Let’s see how many treasures Captain Cooper found!</p>
+      ${visualRow}
+      ${steps.join("")}
+      <button onclick="this.parentElement.remove()" class="btn btn-sm btn-outline-secondary mt-3">Close</button>
+    </div>
+  `;
+  document.body.appendChild(tipBox);
+};

@@ -11,7 +11,7 @@ let gameDifficulty = 1;
     generateQuestionFn: generateQuestion,
     checkAnswerFn: submitAnswer,
     getFeedbackMessageFn: () => {},
-    gameId: "game4", // Unique game ID for tracking
+    gameId: "game5", // Unique game ID for tracking
   });
 
   window.readStory = game.readStory;
@@ -110,7 +110,7 @@ export function submitAnswer() {
         const winModal = new bootstrap.Modal(document.getElementById("winModal"));
         winModal.show();
         launchConfetti();
-        updatePerformance("game4", mistakes, startTime);
+        updatePerformance("game5", mistakes, startTime);
       }, 600);
     } else {
       setTimeout(() => {
