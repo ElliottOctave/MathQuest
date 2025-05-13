@@ -1,4 +1,4 @@
-import { setupGame, updatePerformance } from '../template/gameTemplate.js';
+import { setupGame, updatePerformance, getDifficulty } from '../template/gameTemplate.js';
 
 let progress = 0;
 let currentEquation = [];
@@ -6,13 +6,14 @@ let correctEquation = [];
 let missingValues = [];
 let mistakes = 0;
 let startTime = Date.now();
+let difficulty;
 
 // Initialize the game with the necessary functions
 const game = setupGame({
   generateQuestionFn: generateEquation,
   checkAnswerFn: submitAnswer,
   getFeedbackMessageFn: showFeedback,
-  gameId: "game7", // Unique game ID for tracking
+  gameId: "game3", // Unique game ID for tracking
 });
 
 window.readStory = game.readStory;
@@ -29,15 +30,14 @@ window.restartGame = () => {
 window.onload = () => changeDifficulty();
 
 // Function to generate the equation
-function generateEquation(difficulty) {
+async function generateEquation() {
+  difficulty = await getDifficulty("game3"); // gameId van dit spel
   const operators = ['+', '-'];
   let left = 0, right = 0, result = 0, op = '+';
 
-  // Set max based on difficulty
   const max =
     difficulty === 1 ? 10 :
-    difficulty === 2 ? 15 :
-    20;
+    difficulty === 2 ? 15 : 20;
 
   do {
     left = Math.floor(Math.random() * (max + 1));
@@ -65,8 +65,8 @@ function generateEquation(difficulty) {
     missingValues.push(base[0]);
     missingValues.push(base[1]);
   } else {
-    currentEquation[0] = '__'; // first number
-    currentEquation[2] = '__'; // second number
+    currentEquation[0] = '__';
+    currentEquation[2] = '__';
     missingValues.push(base[0]);
     missingValues.push(base[2]);
   }
@@ -171,6 +171,7 @@ export function submitAnswer() {
 
   } else {
     mistakes++;
+    game.registerMistake();
     showFeedback("❌ Try again!", false);
   }
 }
@@ -213,3 +214,152 @@ function launchConfetti() {
     }
   })();
 }
+
+window.showHelp = function () {
+  const operators = ['+', '-'];
+
+  function createExercise(gaps = 1) {
+    const max = 20;
+    let left, right, result, op;
+    do {
+      left = Math.floor(Math.random() * (max + 1));
+      right = Math.floor(Math.random() * (max + 1));
+      op = operators[Math.floor(Math.random() * operators.length)];
+      result = op === '+' ? left + right : left - right;
+    } while (
+      result < 0 || result > max ||
+      left > max || right > max
+    );
+
+    const full = [`${left}`, op, `${right}`, '=', `${result}`];
+    let display = [...full];
+    const missing = [];
+
+    if (gaps === 1) {
+      const idx = Math.random() < 0.5 ? 0 : 2;
+      display[idx] = '__';
+      missing.push(full[idx]);
+    } else if (gaps === 2) {
+      display[0] = '__';
+      display[2] = '__';
+      missing.push(full[0], full[2]);
+    }
+
+    const pool = ['+', '-', '=', ...Array.from({ length: 21 }, (_, i) => `${i}`)];
+    let options = [...missing];
+    while (options.length < 6) {
+      const rand = pool[Math.floor(Math.random() * pool.length)];
+      if (!options.includes(rand)) options.push(rand);
+    }
+
+    return {
+      display,
+      solution: full,
+      options: shuffleArray(options)
+    };
+  }
+
+  function renderEquation(arr) {
+    return arr.map(v => `
+      <div style="display:inline-block; margin: 4px; padding: 8px 12px;
+                  border-radius: 8px; font-weight: bold;
+                  background-color: ${v === '__' ? '#ffe082' : '#e0e0e0'};">
+        ${v}
+      </div>
+    `).join('');
+  }
+
+  function renderOptions(arr) {
+    return arr.map(v => `
+      <div style="display:inline-block; margin: 3px; padding: 8px 10px;
+                  border-radius: 6px; background-color: #ffd54f;">
+        ${v}
+      </div>
+    `).join('');
+  }
+
+  function generateExplanation(e) {
+    const missing = e.display.map((v, i) => v === '__' ? i : -1).filter(i => i !== -1);
+    const op = e.solution[1];
+    const left = parseInt(e.solution[0]);
+    const right = parseInt(e.solution[2]);
+    const result = parseInt(e.solution[4]);
+    let expl = '';
+  
+    if (missing.length === 1) {
+      const idx = missing[0];
+      const val = e.solution[idx];
+  
+      if (idx === 0) {
+        expl = `
+          <p>The first number is missing.</p>
+          <p>Tip: Try to find the number that ${op === '+' ? 'you add to' : 'you start with before subtracting'} ${right} to get ${result}.</p>
+          <p>Think: what number ${op === '+' ? 'plus' : 'minus'} ${right} makes ${result}?</p>
+          <p>The answer is <strong>${val}</strong>.</p>
+        `;
+      } else if (idx === 2) {
+        expl = `
+          <p>The second number is missing.</p>
+          <p>Tip: Try to find the number that goes with ${left} to make ${result} using ${op === '+' ? 'adding' : 'subtracting'}.</p>
+          <p>Think: what number fits in <strong>${left} ${op} ? = ${result}</strong>?</p>
+          <p>The answer is <strong>${val}</strong>.</p>
+        `;
+      }
+    } else {
+      expl = `
+        <p>Two numbers are missing.</p>
+        <p>Tip: Try some of the choices and see what fits together with ${op} to make ${result}.</p>
+        <p>Think: what two numbers go together with ${op} to get ${result}?</p>
+        <p>The full equation is: <strong>${e.solution[0]} ${op} ${e.solution[2]} = ${result}</strong>.</p>
+      `;
+    }
+  
+    return expl;
+  }
+  
+  const ex1 = createExercise(1); // 1 missing part
+  const ex2 = createExercise(2); // 2 missing parts
+
+  const tipBox = document.createElement('div');
+  tipBox.innerHTML = `
+    <div style="
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background: #fff9c4;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      max-width: 420px;
+      max-height: 75vh;
+      overflow-y: auto;
+      z-index: 1001;
+      font-family: sans-serif;
+    ">
+
+      <h5>Example 1</h5>
+      <p>Let’s look at this one together:</p>
+      <div>${renderEquation(ex1.display)}</div>
+      <p><strong>Choices:</strong></p>
+      <div>${renderOptions(ex1.options)}</div>
+      ${generateExplanation(ex1)}
+
+      <hr>
+
+      <h5>Example 2</h5>
+      <p>Here’s another one to figure out:</p>
+      <div>${renderEquation(ex2.display)}</div>
+      <p><strong>Choices:</strong></p>
+      <div>${renderOptions(ex2.options)}</div>
+      ${generateExplanation(ex2)}
+
+      <button onclick="this.parentElement.remove()" class="btn btn-sm btn-outline-secondary mt-3">Close</button>
+    </div>
+  `;
+
+  document.body.appendChild(tipBox);
+
+  function shuffleArray(arr) {
+    return arr.sort(() => Math.random() - 0.5);
+  }
+};

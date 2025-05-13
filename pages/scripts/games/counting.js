@@ -12,7 +12,7 @@ const game = setupGame({
   generateQuestionFn: generateQuestion,
   checkAnswerFn: checkAnswer,
   getFeedbackMessageFn: getFeedbackMessage,
-  gameId: "game3",
+  gameId: "game4",
 });
 
 window.readStory = game.readStory;
@@ -24,7 +24,7 @@ window.onload = () => changeDifficulty();
 
 // Generate the balloon question
 async function generateQuestion(difficulty) {
-  difficulty = await getDifficulty("game1");
+  difficulty = await getDifficulty("game4");
   const balloonArea = document.getElementById("balloonArea");
   balloonArea.innerHTML = "";
   totalClicks = 0;
