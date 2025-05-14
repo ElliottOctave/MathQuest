@@ -9,6 +9,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header"></div>
+
 <div class="container py-5">
 
   <!-- Story -->
@@ -67,10 +70,20 @@
     </div>
   </div>
 
+      <!-- Help button -->
+      <button id="helpButton" class="btn btn-warning help-btn"
+      style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 1000;"
+      onclick="showHelp()">
+      ❓ Tip
+    </button>
 </div>
+
+  <!-- Footer will be loaded dynamically -->
+  <div id="footer"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script type="module" src="../scripts/games/telltime.js"></script>
+<script type="module" src="../scripts/include.js"></script>
 </body>
 </html>
