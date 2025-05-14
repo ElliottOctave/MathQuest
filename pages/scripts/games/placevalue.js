@@ -11,7 +11,7 @@ let gameDifficulty = 1;
     generateQuestionFn: generateQuestion,
     checkAnswerFn: submitAnswer,
     getFeedbackMessageFn: () => {},
-    gameId: "game4", // Unique game ID for tracking
+    gameId: "game5", // Unique game ID for tracking
   });
 
   window.readStory = game.readStory;
@@ -25,7 +25,16 @@ let gameDifficulty = 1;
   // Expose restartGame to reset progress and call the restart function from the game template
   window.restartGame = () => {
     document.getElementById("progressBar").style.width = "0%";
-    game.restartGame(); // This calls the restart function from the game template
+  
+    if (mistakes >= 3) {
+      const helpBtn = document.getElementById("helpButton");
+      if (helpBtn) helpBtn.style.display = "block";
+    } else {
+      const helpBtn = document.getElementById("helpButton");
+      if (helpBtn) helpBtn.style.display = "none";
+    }
+  
+    game.restartGame(); // Calls template restart
     target = 0;
     basket = [];
     mistakes = 0;
@@ -33,6 +42,7 @@ let gameDifficulty = 1;
     document.getElementById("basket").innerHTML = "";
     document.getElementById("feedback").innerHTML = "";
   };
+  
 
 function generateQuestion(difficulty) {
   gameDifficulty = difficulty || 1; // Default to 1 if not provided
@@ -100,7 +110,7 @@ export function submitAnswer() {
         const winModal = new bootstrap.Modal(document.getElementById("winModal"));
         winModal.show();
         launchConfetti();
-        updatePerformance("game4", mistakes, startTime);
+        updatePerformance("game5", mistakes, startTime);
       }, 600);
     } else {
       setTimeout(() => {
@@ -110,6 +120,8 @@ export function submitAnswer() {
       }, 1500);
     }
   } else {
+    mistakes++;
+    game.registerMistake();
     feedback.innerHTML = `<span class="incorrect">❌ Oops! Try again!</span>`;
   }
 }
@@ -140,3 +152,93 @@ function launchConfetti() {
     }
   })();
 }
+
+window.showHelp = function () {
+  const targetVal = target;
+  let remaining = targetVal;
+  let steps = [];
+  let giftCount = 0;
+  let balloonCount = 0;
+
+  while (remaining >= 10) {
+    steps.push({
+      type: "gift",
+      before: remaining,
+      after: remaining - 10,
+      reason: "Because 10 fits in " + remaining
+    });
+    remaining -= 10;
+    giftCount++;
+  }
+
+  while (remaining > 0) {
+    steps.push({
+      type: "balloon",
+      before: remaining,
+      after: remaining - 1,
+      reason: "Because 10 doesn’t fit in " + remaining
+    });
+    remaining -= 1;
+    balloonCount++;
+  }
+
+  const stepVisuals = steps.map((step, i) => {
+    const imgSrc = step.type === "gift"
+      ? "../assets/placevalue/gift.webp"
+      : "../assets/placevalue/balloon.webp";
+    const alt = step.type === "gift" ? "gift" : "balloon";
+  
+    const nowLine = step.after > 0
+    ? `<p>Now we need <strong>${step.after}</strong>.</p>`
+    : `<p><strong>There’s nothing left!</strong></p>`;  
+  
+    return `
+      <div style="margin-bottom: 16px;">
+        <p><strong>Step ${i + 1}</strong></p>
+        <p>We still need <strong>${step.before}</strong>.</p>
+        <p>${step.reason}</p>
+        <p>
+          Place a 
+          <img src="${imgSrc}" alt="${alt}" width="35" style="vertical-align: middle;">
+        </p>
+        ${nowLine}
+      </div>
+    `;
+  }).join('');  
+
+  const tipBox = document.createElement("div");
+  tipBox.innerHTML = `
+    <div style="
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background: #fff9c4;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      max-width: 400px;
+      max-height: 75vh;
+      overflow-y: auto;
+      z-index: 1001;
+      font-family: sans-serif;
+    ">
+      <h5 style="margin-top: 0;">Tip:</h5>
+      <p>We want to build the number <strong>${targetVal}</strong>.</p>
+      <p>At each step, ask yourself:</p>
+      <ul>
+        <li><strong>Is the number 10 or more?</strong> → Place a 
+          <img src="../assets/placevalue/gift.webp" alt="gift" width="25" style="vertical-align: middle;">
+        </li>
+        <li><strong>Less than 10?</strong> → Place a 
+          <img src="../assets/placevalue/balloon.webp" alt="balloon" width="20" style="vertical-align: middle;">
+        </li>
+      </ul>
+      <hr>
+      ${stepVisuals}
+      <hr>
+      <p>You need <strong>${giftCount}</strong> gift${giftCount !== 1 ? "s" : ""} and <strong>${balloonCount}</strong> balloon${balloonCount !== 1 ? "s" : ""}.</p>
+      <button onclick="this.parentElement.remove()" class="btn btn-sm btn-outline-secondary mt-3">Close</button>
+    </div>
+  `;
+  document.body.appendChild(tipBox);
+};

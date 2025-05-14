@@ -41,6 +41,11 @@ export function setupGame({
     generateQuestionFn(difficulty);
   }
 
+  function registerMistake() {
+    mistakes += 1;
+  }
+  
+
   function submitAnswer() {
     const input = document.getElementById(answerInputId).value;
     const feedback = document.getElementById(feedbackId);
@@ -72,7 +77,8 @@ export function setupGame({
   }
 
   async function restartGame() {
-    // Show help button only if previous level had 3+ mistakes
+  console.log("Restarting game...");
+  console.log("Mistakes made:", mistakes);
     if (mistakes >= 3) {
       const helpBtn = document.getElementById("helpButton");
       if (helpBtn) helpBtn.style.display = "block";
@@ -123,8 +129,9 @@ export function setupGame({
   return {
     readStory,
     changeDifficulty,
+    registerMistake,
     submitAnswer,
-    restartGame
+    restartGame,
   };
 }
 

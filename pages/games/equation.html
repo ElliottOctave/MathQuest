@@ -69,15 +69,23 @@
       </div>
     </div>
 
+    <!-- Help button -->
+    <button id="helpButton" class="btn btn-warning help-btn"
+    style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 1000;"
+    onclick="showHelp()">
+❓ Tip!
+</button>
+
+
   </div>
 
   <!-- Footer will be loaded dynamically -->
   <div id="footer"></div>
 
   <!-- Scripts -->
+  <script type="module" src="/pages/scripts/games/equation.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-  <script type="module" src="/pages/scripts/games/equation.js"></script>
   <script src="/pages/scripts/include.js"></script> <!-- important to inject header/footer -->
 </body>
 </html>
