@@ -1,11 +1,11 @@
-import { setupGame, updatePerformance } from '../template/gameTemplate.js';
+import { setupGame, updatePerformance, getDifficulty } from '../template/gameTemplate.js';
 
 let game_difficulty = 1;
 let progress = 0;
 const synth = window.speechSynthesis;
 let mistakes = 0;
 let startTime = Date.now();
-
+let difficulty;
 // Initialize the game with the necessary functions
 const game = setupGame({
   generateQuestionFn: generateQuestion,
@@ -30,8 +30,8 @@ window.onload = () => game.changeDifficulty();
 
 
 // Function to generate the question
-function generateQuestion(difficulty) {
-  game_difficulty = difficulty || 1; // Default to 1 if not provided
+async function generateQuestion() {
+  difficulty = await getDifficulty("game9");
   document.getElementById("feedback").innerHTML = "";
   const chartArea = document.getElementById("chartArea");
   chartArea.innerHTML = "";
@@ -57,7 +57,7 @@ function generateQuestion(difficulty) {
     for (let i = 0; i < item.count; i++) {
       const box = document.createElement("div");
       box.className = "chart-box";
-      box.style.backgroundColor = randomPastelColor();
+      box.style.backgroundColor = "#a0c4ff";
       row.appendChild(box);
     }
 
@@ -186,6 +186,7 @@ function correctFeedback() {
 // Function to give wrong answer feedback
 function wrongFeedback() {
   mistakes++;
+  game.registerMistake();
   document.getElementById("feedback").innerHTML = `<span class="incorrect">❌ Try again!</span>`;
 }
 
@@ -227,3 +228,98 @@ function getFeedbackMessage(correct, correctAnswer) {
     ? `✅ Great job! The correct answer is ${correctAnswer}.`
     : `❌ Oops! Try again. The correct answer is ${correctAnswer}.`;
 }
+
+window.showHelp = function () {
+  const chartArea = document.getElementById("chartArea");
+  const fruitRows = Array.from(chartArea.children);
+  const questionText = document.getElementById("questionText").textContent;
+
+  const data = fruitRows.map(row => {
+    const icon = row.querySelector(".icon")?.textContent.trim() || "❓";
+    const boxes = row.querySelectorAll(".chart-box").length;
+    return { icon, boxes };
+  });
+
+  const isMost = questionText.includes("most");
+  const isLeast = questionText.includes("least");
+  const isCompare = questionText.includes("How many");
+
+  const createBoxRow = (n) => {
+    return Array.from({ length: n }).map(() =>
+      `<div style="width: 20px; height: 20px; background-color: #a0c4ff; margin: 2px; border-radius: 4px;"></div>`
+    ).join("");
+  };
+
+  let content = `<p style="margin-bottom: 4px;"><strong>Question:</strong> ${questionText}</p><hr style="margin: 8px 0;">`;
+
+  if (isMost || isLeast) {
+    const sorted = [...data].sort((a, b) => isMost ? b.boxes - a.boxes : a.boxes - b.boxes);
+    const target = sorted[0];
+
+    content += `
+      <p><strong>Let’s solve it together!</strong></p>
+      <p>Look at how long each row is. The longest row means the most. The shortest row means the least.</p>
+      <div style="margin: 12px 0;">
+        ${data.map(d => `
+          <div style="display: flex; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 20px; width: 30px;">${d.icon}</span>
+            ${createBoxRow(d.boxes)}
+          </div>
+        `).join("")}
+      </div>
+      <p>The <strong>${isMost ? "longest" : "shortest"}</strong> row is the answer.</p>
+      <p><strong>The correct answer is:</strong> ${target.icon}</p>
+    `;
+  }
+
+  if (isCompare) {
+    const match = questionText.match(/How many (more|less) does (.+) have than (.+)\?/);
+    if (!match) return;
+    const [, mode, labelA, labelB] = match;
+
+    const itemA = data.find(d => labelA.includes(d.icon)) || data[0];
+    const itemB = data.find(d => labelB.includes(d.icon)) || data[1];
+    const diff = Math.abs(itemA.boxes - itemB.boxes);
+
+    content += `
+      <p><strong>Let’s compare two rows!</strong></p>
+      <p>Look at how many boxes each row has. Count how many more one row has than the other.</p>
+      <div style="margin: 12px 0;">
+        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+          <span style="font-size: 20px; width: 30px;">${itemA.icon}</span>
+          ${createBoxRow(itemA.boxes)}
+        </div>
+        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+          <span style="font-size: 20px; width: 30px;">${itemB.icon}</span>
+          ${createBoxRow(itemB.boxes)}
+        </div>
+      </div>
+      <p>We count the extra boxes between them.</p>
+      <p><strong>The difference is:</strong> ${diff}</p>
+    `;
+  }
+
+  const tipBox = document.createElement("div");
+  tipBox.innerHTML = `
+    <div style="
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background: #fff9c4;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      max-width: 420px;
+      max-height: 70vh;
+      overflow-y: auto;
+      z-index: 1001;
+      font-family: sans-serif;
+    ">
+      <h5>Tip:</h5>
+      ${content}
+      <button onclick="this.parentElement.remove()" class="btn btn-sm btn-outline-secondary mt-3">Close</button>
+    </div>
+  `;
+
+  document.body.appendChild(tipBox);
+};
