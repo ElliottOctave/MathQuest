@@ -1,4 +1,4 @@
-import { setupGame, updatePerformance } from '../template/gameTemplate.js';
+import { setupGame, updatePerformance, getDifficulty } from '../template/gameTemplate.js';
 
 let game_difficulty = 1;
 let progress = 0;
@@ -7,13 +7,13 @@ let selectedOrder = [];
 let synth = window.speechSynthesis;
 let mistakes = 0;
 let startTime = Date.now();
-
+let difficulty;
   // Initialize the game with the necessary functions
   const game = setupGame({
     generateQuestionFn: generateQuestion,
     checkAnswerFn: checkAnswer,
     getFeedbackMessageFn: getFeedbackMessage,
-    gameId: "game5", // Unique game ID for tracking
+    gameId: "game7", // Unique game ID for tracking
   });
 
   window.readStory = game.readStory;
@@ -30,7 +30,8 @@ let startTime = Date.now();
   window.onload = () => changeDifficulty();
 
 // Function to generate the question (i.e., create the flags)
-function generateQuestion(difficulty) {
+async function generateQuestion() {
+  difficulty = await getDifficulty("game7"); // gameId van dit spel
   console.log("Generating question for difficulty:", difficulty);
   game_difficulty = difficulty || 1; // Default to 1 if not provided
   const flagsArea = document.getElementById("flagsArea");
@@ -125,6 +126,7 @@ function correctAnswer() {
 
 function wrongAnswer() {
   mistakes++;
+  game.registerMistake();
   document.getElementById("feedback").innerHTML = `<span class="incorrect">❌ Try again!</span>`;
 }
 
@@ -225,3 +227,106 @@ function randomColor() {
   const colors = ["#FF6B6B", "#6BCB77", "#4D96FF", "#FFD93D", "#FF6F91"];
   return colors[Math.floor(Math.random() * colors.length)];
 }
+
+window.showHelp = function () {
+  if (!flags.length) return;
+
+  const flagHeights = [...flags];
+  const sorted = flagHeights.slice().sort((a, b) => a.height - b.height);
+
+  let title = "";
+  let explanation = "";
+  let example = "";
+
+  const flagVisuals = sorted.map(f =>
+    `<div style="width: 30px; height: ${f.height / 2}px; background:${f.color}; margin: 0 5px; border-radius: 4px;"></div>`
+  ).join('');
+
+  // 🟡 Difficulty 1 – Kortste vlag
+  if (difficulty === 1) {
+    const minHeight = Math.min(...sorted.map(f => f.height));
+    const linePosition = minHeight / 2;
+
+    title = "Let’s find the shortest flag!";
+    explanation = `
+      <p>All flags are hanging from the same rope.</p>
+      <p>The shortest one is the flag that <strong>hangs the least</strong>.</p>
+      <p>Use your eyes like a ruler and look at the <strong>bottoms</strong> of the flags.</p>
+      <p>Which one stops first?</p>
+    `;
+
+    example = `
+      <p>Let’s look:</p>
+      <div style="position: relative; display: flex; justify-content: center; align-items: flex-start; height: 100px; margin-bottom: 10px;">
+        <div style="position: absolute; top: ${linePosition}px; left: 0; right: 0; height: 2px; background: #555;"></div>
+        ${flagVisuals}
+      </div>
+      <p>The shortest flag <strong>just touches the line</strong>. The others go lower!</p>
+    `;
+  }
+
+  // 🔵 Difficulty 2 – Langste vlag
+  else if (difficulty === 2) {
+    const maxHeight = Math.max(...sorted.map(f => f.height));
+    const linePosition = maxHeight / 2;
+
+    title = "Let’s find the tallest flag!";
+    explanation = `
+      <p>All the flags hang from the same place.</p>
+      <p>The tallest flag <strong>hangs the furthest down</strong>.</p>
+      <p>Look with your eyes like a ruler: who goes the lowest?</p>
+    `;
+
+    example = `
+      <p>See this example:</p>
+      <div style="position: relative; display: flex; justify-content: center; align-items: flex-start; height: 100px; margin-bottom: 10px;">
+        <div style="position: absolute; top: ${linePosition}px; left: 0; right: 0; height: 2px; background: #555;"></div>
+        ${flagVisuals}
+      </div>
+      <p>The tallest flag <strong>just touches the line</strong>. The others stay higher!</p>
+    `;
+  }
+
+  // 🟣 Difficulty 3 – Sorteer van klein naar groot
+  else {
+    title = "Let’s sort the flags!";
+    explanation = `
+      <p>Can you put the flags in a line?</p>
+      <p>Start with the flag that hangs the least.</p>
+      <p>Then pick the next biggest... all the way to the longest one!</p>
+    `;
+
+    example = `
+      <p>This is how the order should look:</p>
+      <div style="display: flex; justify-content: center; align-items: flex-start; height: 100px;">
+        ${flagVisuals}
+      </div>
+    `;
+  }
+
+  // Tip box
+  const tipBox = document.createElement("div");
+  tipBox.innerHTML = `
+    <div style="
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background: #fff9c4;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      max-width: 420px;
+      max-height: 75vh;
+      overflow-y: auto;
+      z-index: 1001;
+      font-family: sans-serif;
+    ">
+      <h5 style="margin-top: 0;">Tip:</h5>
+      <p><strong>${title}</strong></p>
+      ${explanation}
+      ${example}
+      <button onclick="this.parentElement.remove()" class="btn btn-sm btn-outline-secondary mt-3">Close</button>
+    </div>
+  `;
+  document.body.appendChild(tipBox);
+};

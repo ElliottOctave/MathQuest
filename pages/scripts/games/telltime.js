@@ -1,6 +1,5 @@
-import { setupGame, updatePerformance } from '../template/gameTemplate.js';
+import { setupGame, updatePerformance, getDifficulty } from '../template/gameTemplate.js';
 
-let game_difficulty = 1;
 let progress = 0;
 let correctHour = 0;
 let correctMinute = 0;
@@ -10,13 +9,13 @@ let draggingHand = null;
 const synth = window.speechSynthesis;
 let  mistakes = 0;
 let startTime = Date.now();
-
+let difficulty;
 // Initialize the game with the necessary functions
 const game = setupGame({
   generateQuestionFn: generateQuestion,
   checkAnswerFn: submitAnswer,
   getFeedbackMessageFn: correctFeedback,
-  gameId: "game6", // Unique game ID for tracking
+  gameId: "game8", // Unique game ID for tracking
 });
 
 window.readStory = game.readStory;
@@ -35,23 +34,23 @@ window.submitAnswer = submitAnswer;
 window.onload = () => changeDifficulty();
 
 // Function to generate the question
-function generateQuestion(difficulty) {
-  game_difficulty = difficulty || 1; // Default to 1 if not provided
+async function generateQuestion() {
+  difficulty = await getDifficulty("game8");
   console.log("Generating question for difficulty:", difficulty);
   const digitalArea = document.getElementById("digitalArea");
 
-  if (game_difficulty === 1) {
+  if (difficulty === 1) {
     correctHour = Math.floor(Math.random() * 12) + 1;
     correctMinute = 0;
-  } else if (game_difficulty === 2) {
+  } else if (difficulty === 2) {
     correctHour = Math.floor(Math.random() * 12) + 1;
     correctMinute = Math.random() < 0.5 ? 0 : 30;
   } else {
     correctHour = Math.floor(Math.random() * 12) + 1;
     correctMinute = Math.random() < 0.5 ? 0 : 30;
   }
-  console.log(game_difficulty, correctHour, correctMinute);
-  if (game_difficulty < 3) {
+  console.log(difficulty, correctHour, correctMinute);
+  if (difficulty < 3) {
     digitalArea.innerHTML = `
       <div class="digital-clock">
         <div class="time-section">
@@ -129,8 +128,8 @@ function drawClock() {
     ctx.fillText(i, 100 + Math.cos(angle) * 70, 100 + Math.sin(angle) * 70);
   }
 
-  let hour = game_difficulty === 3 ? draggedHour : correctHour;
-  let minute = game_difficulty === 3 ? draggedMinute : correctMinute;
+  let hour = difficulty === 3 ? draggedHour : correctHour;
+  let minute = difficulty === 3 ? draggedMinute : correctMinute;
 
   drawHand(ctx, ((hour % 12) + minute / 60) * 30, 50, 6);
   drawHand(ctx, minute * 6, 70, 3);
@@ -150,8 +149,8 @@ function drawClock() {
     ctx.lineWidth = 2;
     ctx.stroke();
   }
-  console.log(game_difficulty);
-  if (game_difficulty === 3) {
+  console.log(difficulty);
+  if (difficulty === 3) {
     canvas.onmousedown = startDrag;
     canvas.onmousemove = dragMove;
     canvas.onmouseup = stopDrag;
@@ -214,7 +213,7 @@ function detectHand(e) {
 
 // Function to submit the answer
 export function submitAnswer() {
-  if (game_difficulty < 3) {
+  if (difficulty < 3) {
     const input = `${parseInt(document.getElementById("hourDisplay").textContent)}:${document.getElementById("minuteDisplay").textContent}`;
     const correctString = `${correctHour}:${correctMinute.toString().padStart(2, '0')}`;
     if (input === correctString) {
@@ -241,12 +240,12 @@ function correctFeedback() {
     setTimeout(() => {
       const win = new bootstrap.Modal(document.getElementById("winModal"));
       win.show();
-      updatePerformance("game6", mistakes, startTime);
+      updatePerformance("game8", mistakes, startTime);
       launchConfetti();
     }, 500);
   } else {
     setTimeout(() => {
-      generateQuestion(game_difficulty);
+      generateQuestion(difficulty);
     }, 1500);
   }
 }
@@ -254,6 +253,7 @@ function correctFeedback() {
 // Function to give feedback for a wrong answer
 function wrongFeedback() {
   mistakes++;
+  game.registerMistake();
   document.getElementById("feedback").innerHTML = `<span class="incorrect">❌ Try again!</span>`;
 }
 
@@ -283,3 +283,149 @@ function launchConfetti() {
     }
   })();
 }
+
+window.showHelp = function () {
+  let title = "";
+  let explanation = "";
+  let visual = "";
+
+  let tempHour = 3;
+  let tempMinute = 0;
+
+  if (difficulty === 1) {
+    title = "Can you tell what time the clock shows?";
+    explanation = `
+      <p>Look at the <strong>short hand</strong>. It tells us the hour.</p>
+      <p>Look at the <strong>long hand</strong>. If it points to the top, that means <strong>:00</strong>.</p>
+      <p>In this example:</p>
+      <ul style="padding-left: 20px;">
+        <li>The short hand is pointing at the 3</li>
+        <li>The long hand is pointing to the top</li>
+      </ul>
+      <p>So the time is <strong>3 o’clock</strong>.</p>
+    `;
+    tempHour = 3;
+    tempMinute = 0;
+  }
+
+  else if (difficulty === 2) {
+    title = "Let’s learn what :30 means!";
+    explanation = `
+      <p>The <strong>short hand</strong> still shows the hour.</p>
+      <p>If the <strong>long hand</strong> points to the bottom, it means <strong>:30</strong>.</p>
+      <p>In this example:</p>
+      <ul style="padding-left: 20px;">
+        <li>The short hand is between the 7 and the 8</li>
+        <li>The long hand is pointing to the bottom</li>
+      </ul>
+      <p>That means it’s <strong>7:30</strong>.</p>
+    `;
+    tempHour = 7;
+    tempMinute = 30;
+  }
+
+  else {
+    title = "You get to move the hands!";
+    explanation = `
+      <p>Now you can drag the clock hands to show the time.</p>
+      <p>Use the <strong>short hand</strong> for the hour and the <strong>long hand</strong> for the minutes.</p>
+      <p>We only use <strong>:00</strong> and <strong>:30</strong> in this game.</p>
+      <p>Try to match the clock with the time you see on the screen.</p>
+      <p>Here’s the time you need to build:</p>
+    `;
+    tempHour = correctHour;
+    tempMinute = correctMinute;
+  }
+
+  visual = `
+    <canvas id="helpClock" width="200" height="200" style="margin: 10px auto; display: block;"></canvas>
+  `;
+
+  const tipBox = document.createElement("div");
+  tipBox.innerHTML = `
+    <div style="
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background: #fff9c4;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      max-width: 400px;
+      max-height: 75vh;
+      overflow-y: auto;
+      z-index: 1001;
+      font-family: sans-serif;
+    ">
+      <h5 style="margin-top: 0;">Tip:</h5>
+      <p><strong>${title}</strong></p>
+      ${explanation}
+      ${visual}
+      <button onclick="this.parentElement.remove()" class="btn btn-sm btn-outline-secondary mt-3">Close</button>
+    </div>
+  `;
+
+  document.body.appendChild(tipBox);
+
+  // Tekent het voorbeeld op canvas
+  setTimeout(() => drawClockExample("helpClock", tempHour, tempMinute), 0);
+
+  // Hulpfunctie om klok te tekenen
+  function drawClockExample(canvasId, hour, minute) {
+    const canvas = document.getElementById(canvasId);
+    const ctx = canvas.getContext("2d");
+
+    ctx.clearRect(0, 0, 200, 200);
+
+    // Achtergrond
+    ctx.beginPath();
+    ctx.arc(100, 100, 90, 0, 2 * Math.PI);
+    ctx.fillStyle = "#fff";
+    ctx.fill();
+    ctx.stroke();
+
+    // Cijfers
+    ctx.font = "16px Comic Sans MS";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    for (let i = 1; i <= 12; i++) {
+      const angle = (i - 3) * (Math.PI * 2) / 12;
+      ctx.fillText(i, 100 + Math.cos(angle) * 70, 100 + Math.sin(angle) * 70);
+    }
+
+    // Wijzers
+    const hourAngle = ((hour % 12) + minute / 60) * 30;
+    const minuteAngle = minute * 6;
+
+    drawHand(ctx, hourAngle, 50, 6);
+    drawHand(ctx, minuteAngle, 70, 3);
+
+    // Uur-tickjes
+    for (let i = 0; i < 12; i++) {
+      const angle = (i * 30) * (Math.PI / 180);
+      const x1 = 100 + Math.cos(angle) * 80;
+      const y1 = 100 + Math.sin(angle) * 80;
+      const x2 = 100 + Math.cos(angle) * 90;
+      const y2 = 100 + Math.sin(angle) * 90;
+
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.strokeStyle = "#333";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    // Wijzerfunctie
+    function drawHand(ctx, angle, length, width) {
+      ctx.beginPath();
+      ctx.lineWidth = width;
+      ctx.moveTo(100, 100);
+      ctx.lineTo(
+        100 + Math.cos((Math.PI / 180) * (angle - 90)) * length,
+        100 + Math.sin((Math.PI / 180) * (angle - 90)) * length
+      );
+      ctx.stroke();
+    }
+  }
+};
