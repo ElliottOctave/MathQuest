@@ -56,7 +56,7 @@ async function generateQuestion() {
     div.style.backgroundColor = flag.color;
     div.dataset.id = flag.id;
 
-    if (difficulty < 3) {
+    if (game_difficulty < 3) {
       div.addEventListener("click", () => selectFlag(flag.id));
     } else {
       div.draggable = true;
@@ -72,21 +72,21 @@ async function generateQuestion() {
 }
 
 export function submitAnswer() {
-  if (difficulty < 3) {
+  if (game_difficulty < 3) {
     if (selectedOrder.length === 0) {
       document.getElementById("feedback").innerHTML = "❗ Please select a flag first!";
       return;
     }
   }
 
-  if (difficulty === 1) {
+  if (game_difficulty === 1) {
     const shortest = flags.reduce((min, flag) => (flag.height < min.height ? flag : min));
     if (selectedOrder[0] === shortest.id) {
       correctAnswer();
     } else {
       wrongAnswer();
     }
-  } else if (difficulty === 2) {
+  } else if (game_difficulty === 2) {
     const tallest = flags.reduce((max, flag) => (flag.height > max.height ? flag : max));
     if (selectedOrder[0] === tallest.id) {
       correctAnswer();
@@ -119,7 +119,7 @@ function correctAnswer() {
     }, 500);
   } else {
     setTimeout(() => {
-      generateQuestion(difficulty);
+      generateQuestion(game_difficulty);
     }, 1500);
   }
 }
@@ -192,7 +192,7 @@ function getFeedbackMessage(correct, correctAnswer) {
 function restartGame() {
   progress = 0;
   document.getElementById("progressBar").style.width = "0%";
-  generateQuestion(difficulty);
+  generateQuestion(game_difficulty);
 }
 
 // Function to launch confetti when the game is won
