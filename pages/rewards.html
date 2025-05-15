@@ -8,45 +8,68 @@
   <link rel="stylesheet" href="styles/style.css">
   <link rel="stylesheet" href="styles/mathQuest.css">
   <style>
-    /* Lock with grey color when locked */
-    .locked {
-      background-color: #b3b3b3;
-      cursor: not-allowed;
+    body {
+      background-color: #fdf7ef;
+    }
+
+    .reward-previews {
+      display: flex;
+      justify-content: center;
+      gap: 2.5rem;
+      flex-wrap: wrap;
+      margin-top: 2.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .card-preview {
       position: relative;
-      padding-left: 50px;
-    }
-
-    .locked:hover {
-      background-color: #b3b3b3;  /* Make sure it stays gray even on hover */
-    }
-
-    .unlocked {
-      background-color: #28a745;
+      width: 280px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .unlocked:hover {
-      background-color: #218838;
+    .card-preview img {
+      width: 100%;
+      display: block;
+      transition: opacity 0.3s ease;
     }
 
-    .unlock-animation {
-      animation: unlock 1s forwards;
+    .card-preview .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(60, 30, 10, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      color: white;
+      font-size: 1.4rem;
+      font-weight: bold;
+      text-align: center;
+      padding: 1rem;
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
     }
 
-    @keyframes unlock {
-      0% {
-        opacity: 0;
-        transform: scale(0);
-      }
-
-      100% {
-        opacity: 1;
-        transform: scale(1);
-      }
+    .card-preview:hover {
+      transform: scale(1.03);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.18);
     }
 
-    /* Confirmation popup styling */
+    .card-preview:hover img {
+      opacity: 0.3;
+    }
+
+    .card-preview:hover .overlay {
+      opacity: 1;
+    }
+
     .popup {
       display: none;
       position: fixed;
@@ -58,39 +81,44 @@
       padding: 20px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       z-index: 10;
+      border-radius: 10px;
     }
 
-    .popup button {
-      margin-top: 10px;
+    h1.display-4 {
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .lead {
+      font-size: 1.2rem;
+      color: #555;
     }
   </style>
 </head>
 <body>
 
-  <!-- Navbar -->
   <div id="header"></div>
 
-  <!-- Main Content -->
   <main>
     <section class="text-center py-5">
       <div class="container">
         <h1 class="display-4">Reward Center!</h1>
         <p class="lead">You've earned some points! Choose what you'd like to do:</p>
 
-        <!-- Reward Action Buttons -->
-        <div class="d-flex justify-content-center gap-4 flex-wrap">
-          <a id="vrGameBtn" href="#" class="btn btn-lg px-4 locked" onclick="unlockVRGame(event)">
-            <span class="lock-icon">🔒</span> Play a VR Game
+        <div class="reward-previews">
+          <a href="/pages/VR-GAMES/vrmenu.html" onclick="unlockVRGame(event)" class="card-preview">
+            <img src="/pages/VR-GAMES/appleMath.webp" alt="VR Game Preview" />
+            <div class="overlay">🍎 Start Apple Math</div>
           </a>
-          <a href="zoo_customization.html" class="btn btn-primary btn-lg px-4">
-            🐾 Customize Your Zoo
+          <a href="zoo_customization.html" class="card-preview">
+            <img src="/pages/assets/animals/zoo.jpg" alt="Zoo Preview" />
+            <div class="overlay">🦁 Open My Zoo</div>
           </a>
         </div>
       </div>
     </section>
   </main>
 
-  <!-- Confirmation Popup -->
   <div class="popup" id="confirmationPopup">
     <h4>Unlock VR Game</h4>
     <p>Do you want to spend 10 coins to unlock the VR Game?</p>
@@ -98,55 +126,31 @@
     <button class="btn btn-danger" onclick="closePopup()">Cancel</button>
   </div>
 
-  <!-- Footer -->
   <div id="footer"></div>
 
-  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/pages/scripts/include.js"></script>
   <script>
-    let userCoins = 10;  // Example of user's coins, you should replace it with real data
+    let userCoins = 10;
 
-    // Function to handle unlocking the VR Game
     function unlockVRGame(event) {
-      // Show confirmation popup no matter the coin amount
-      document.getElementById('confirmationPopup').style.display = 'block';
-    }
-
-    // Confirm unlocking of VR Game and deduct 10 coins
-    function confirmUnlock() {
+      event.preventDefault();
       if (userCoins >= 10) {
-        userCoins -= 10;  // Deduct coins when confirmed
-        const vrGameBtn = document.getElementById('vrGameBtn');
-        vrGameBtn.classList.remove('locked');
-        vrGameBtn.classList.add('unlocked', 'unlock-animation');
-        vrGameBtn.innerHTML = '🎮 Play a VR Game';  // Change button text to unlocked
-        vrGameBtn.removeAttribute('onclick');  // Remove onclick after unlocking
+        document.getElementById('confirmationPopup').style.display = 'block';
       } else {
         alert('You do not have enough coins to unlock the VR game!');
       }
-      closePopup(); // Close the confirmation popup
     }
 
-    // Close the confirmation popup
+    function confirmUnlock() {
+      userCoins -= 10;
+      alert("Game Unlocked! Redirecting...");
+      window.location.href = "vr_game.html"; // Pas aan indien nodig
+    }
+
     function closePopup() {
       document.getElementById('confirmationPopup').style.display = 'none';
     }
-
-    // Check if user has enough coins on page load
-    window.onload = function () {
-      const vrGameBtn = document.getElementById('vrGameBtn');
-      if (userCoins >= 10) {
-        // The button should be unlocked if user has enough coins
-        vrGameBtn.classList.remove('locked');
-        vrGameBtn.classList.add('unlocked');
-        vrGameBtn.innerHTML = '🎮 Play a VR Game';
-      } else {
-        // Keep it locked if not enough coins
-        vrGameBtn.classList.add('locked');
-        vrGameBtn.innerHTML = '🔒 Play a VR Game';
-      }
-    };
   </script>
 </body>
 </html>
