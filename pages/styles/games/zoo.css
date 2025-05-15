@@ -1,0 +1,157 @@
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  background-color: #eee;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+aside {
+  width: 800px;
+  background-color: #f7f7f7;
+  padding: 1rem;
+  overflow-y: auto;
+  border-right: 2px solid #ccc;
+}
+
+section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+}
+
+#zoo-container {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  height: 100%;
+}
+
+#zoo-image {
+  height: 100%;
+  width: auto;
+  max-height: 100%;
+  display: block;
+  pointer-events: none;
+  z-index: 1;
+}
+
+#zoo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 2;
+}
+
+.zoo-animal {
+  position: absolute;
+  width: 80px;
+  cursor: grab;
+  z-index: 10;
+  transition: left 0.25s ease, top 0.25s ease, transform 0.2s ease;
+}
+
+.animal-img {
+  filter: grayscale(100%);
+  transition: filter 0.3s ease;
+}
+
+.animal-img.owned {
+  filter: none;
+}
+
+.animal-card {
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+}
+
+#zoo-guide {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 25%;
+  bottom: 0;
+  background: rgba(0, 255, 0, 0.15);
+  border-top: 2px dashed #28a745;
+  display: none;
+  pointer-events: none;
+  z-index: 5;
+}
+
+footer {
+  background: #222;
+  color: white;
+  text-align: center;
+  padding: 10px;
+}
+
+.zoo-heading {
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  font-size: 2rem;
+  color: #2c3e50;
+  background: linear-gradient(to right, #ffde59, #ff914d);
+  padding: 8px 16px;
+  border-radius: 12px;
+  display: inline-block;
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.zoo-clear {
+  font-weight: bold;
+  border-radius: 10px;
+  box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.15);
+  padding: 8px 16px;
+  transition: background-color 0.2s ease;
+}
+
+.zoo-clear:hover {
+  background-color: #e67e22;
+  color: white;
+}
+
+.btn-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 8px;
+}
+
+.animal-card button {
+  white-space: nowrap;
+}
+
+.animal-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+}
