@@ -29,12 +29,11 @@
 
           document.getElementById("coinCount").textContent = `🪙 ${userCoins} Coins`;
 
-          const vrCard = document.getElementById("vrCard");
           const vrLink = document.getElementById("vrLink");
           const lockOverlay = document.getElementById("vrLock");
 
           if (featureUnlocked) {
-            vrCard.classList.add("unlocked");
+            vrLink.classList.add("unlocked");
             if (lockOverlay) lockOverlay.style.display = "none";
             vrLink.setAttribute("href", "/pages/VR-GAMES/vrmenu.html");
           }
@@ -107,7 +106,7 @@
       color: #856404;
       padding: 0.5rem 1rem;
       border-radius: 30px;
-      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
     }
 
     .reward-previews {
@@ -173,7 +172,7 @@
       padding: 2rem;
       text-align: center;
       width: 300px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
       z-index: 1000;
     }
 
@@ -203,7 +202,7 @@
 
       <div class="reward-previews">
         <!-- VR Game -->
-        <a id="vrLink" href="#" onclick="unlockVRGame(event)" class="card-preview unlocked" >
+        <a id="vrLink" href="#" onclick="unlockVRGame(event)" class="card-preview">
           <img src="/pages/VR-GAMES/appleMath.webp" alt="Apple Math Game" />
           <div id="vrLock" class="locked-overlay">🔒 Locked</div>
           <div class="overlay">🍎 Start Apple Math</div>
