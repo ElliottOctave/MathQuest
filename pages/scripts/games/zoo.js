@@ -1,6 +1,6 @@
 // zoo.js
 import { auth, db } from "/firebase.js";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, onSnapshot } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 
 const animals = [
@@ -15,29 +15,87 @@ const animals = [
   { name: 'dot', img: 'dot.png', price: 10, displayName: 'Detective Dog' }
 ];
 
-let currentUserData = null;
-const ownedAnimals = {};
 const shopEl = document.getElementById('shop');
 const zooEl = document.getElementById('zoo');
 const zooGuide = document.getElementById('zoo-guide');
+const coinDisplay = document.getElementById('coinDisplay');
+let currentUser = null;
 
 function resetZoo() {
   document.querySelectorAll('.zoo-animal').forEach(a => a.remove());
 }
 
+function placeAnimal(animal, position) {
+  const zooAnimal = document.createElement('img');
+  zooAnimal.src = `assets/animals/${animal.img}`;
+  zooAnimal.className = 'zoo-animal';
+  zooAnimal.id = `zoo-${animal.name}`;
+  zooAnimal.draggable = true;
+
+  const zooWidth = zooEl.offsetWidth;
+  const zooHeight = zooEl.offsetHeight;
+
+  // Use saved position if available
+  const left = position ? zooWidth * position.left : (zooWidth - 80) / 2;
+  const top = position ? zooHeight * position.top : zooHeight - 100;
+
+  zooAnimal.style.left = `${left}px`;
+  zooAnimal.style.top = `${top}px`;
+
+  zooAnimal.addEventListener('dragstart', (e) => {
+    e.dataTransfer.setData('text/plain', animal.name);
+    zooAnimal.dataset.dragging = true;
+    zooAnimal.style.transform = 'scale(1.1) translateY(-4px)';
+  });
+
+  zooAnimal.addEventListener('dragend', async (e) => {
+    zooAnimal.style.transform = 'scale(1)';
+    zooAnimal.dataset.dragging = false;
+
+    const zooRect = zooEl.getBoundingClientRect();
+    const x = e.pageX - zooRect.left - 40;
+    const y = e.pageY - zooRect.top - 40;
+    const maxX = zooEl.offsetWidth - 80;
+    const maxY = zooEl.offsetHeight - 80;
+    const clampedX = Math.max(0, Math.min(x, maxX));
+    const clampedY = Math.max(0, Math.min(y, maxY));
+
+    zooAnimal.style.left = `${clampedX}px`;
+    zooAnimal.style.top = `${clampedY}px`;
+
+    // Save to Firestore
+    const percentLeft = clampedX / zooEl.offsetWidth;
+    const percentTop = clampedY / zooEl.offsetHeight;
+
+    const userRef = doc(db, "users", currentUser.uid);
+    const userSnap = await getDoc(userRef);
+    const userData = userSnap.data();
+    const currentPositions = userData.zooPositions || {};
+
+    currentPositions[animal.name] = { left: percentLeft, top: percentTop };
+
+    await updateDoc(userRef, {
+      zooPositions: currentPositions
+    });
+  });
+
+  zooEl.appendChild(zooAnimal);
+}
+
 onAuthStateChanged(auth, async (user) => {
   if (!user) return;
+  currentUser = user;
 
   const userRef = doc(db, "users", user.uid);
   const userSnap = await getDoc(userRef);
   if (!userSnap.exists()) return;
 
-  currentUserData = userSnap.data();
-  const userAnimals = currentUserData.animals || [];
-  const coins = currentUserData.coins || 0;
+  const userData = userSnap.data();
+  const owned = userData.animals || [];
+  const coins = userData.coins || 0;
+  const zooPositions = userData.zooPositions || {};
 
-  const coinDisplay = document.getElementById("coinDisplay");
-  if (coinDisplay) coinDisplay.textContent = `Coins: ${coins}`;
+  coinDisplay.textContent = `Coins: ${coins}`;
 
   animals.forEach(animal => {
     const wrapper = document.createElement("div");
@@ -77,85 +135,44 @@ onAuthStateChanged(auth, async (user) => {
     wrapper.appendChild(btnContainer);
     shopEl.appendChild(wrapper);
 
-    if (userAnimals.includes(animal.name)) {
+    if (owned.includes(animal.name)) {
       img.classList.add("owned");
       btnBuy.disabled = true;
-      btnBuy.className = 'btn btn-secondary btn-sm';
+      btnBuy.className = "btn btn-secondary btn-sm";
       btnBuy.innerText = "Owned";
       btnPlace.style.display = "inline-block";
-      ownedAnimals[animal.name] = true;
+    }
+
+    if (zooPositions[animal.name]) {
+      placeAnimal(animal, zooPositions[animal.name]);
     }
 
     btnBuy.onclick = async () => {
       const userSnap = await getDoc(userRef);
-      const userData = userSnap.data();
-      const owned = userData.animals || [];
-      const coins = userData.coins || 0;
+      const data = userSnap.data();
+      const currentCoins = data.coins || 0;
 
-      if (owned.includes(animal.name)) return;
-      if (coins < animal.price) {
-        alert("Not enough coins.");
-        return;
-      }
+      if (currentCoins < animal.price) return alert("Not enough coins!");
+      if (data.animals?.includes(animal.name)) return;
 
-      const updatedCoins = coins - animal.price;
-      const updatedAnimals = [...owned, animal.name];
+      const updatedCoins = currentCoins - animal.price;
+      const updatedAnimals = [...(data.animals || []), animal.name];
 
       await updateDoc(userRef, {
         coins: updatedCoins,
         animals: updatedAnimals
       });
 
-      const coinDisplay = document.getElementById("coinDisplay");
-      if (coinDisplay) coinDisplay.textContent = `Coins: ${updatedCoins}`;
-
+      coinDisplay.textContent = `Coins: ${updatedCoins}`;
       btnBuy.innerText = "Owned";
-      btnBuy.className = "btn btn-secondary btn-sm";
       btnBuy.disabled = true;
+      btnBuy.className = "btn btn-secondary btn-sm";
       btnPlace.style.display = "inline-block";
     };
 
     btnPlace.onclick = () => {
       if (document.getElementById(`zoo-${animal.name}`)) return;
-
-      const zooAnimal = document.createElement("img");
-      zooAnimal.src = `assets/animals/${animal.img}`;
-      zooAnimal.className = 'zoo-animal';
-      zooAnimal.id = `zoo-${animal.name}`;
-
-      const zooWidth = zooEl.offsetWidth;
-      const zooHeight = zooEl.offsetHeight;
-      const animalSize = 80;
-      const centerX = (zooWidth - animalSize) / 2;
-      const bottomY = zooHeight - animalSize - 20;
-
-      zooAnimal.style.left = `${centerX}px`;
-      zooAnimal.style.top = `${bottomY}px`;
-      zooAnimal.draggable = true;
-
-      zooAnimal.addEventListener('dragstart', (e) => {
-        e.dataTransfer.setData('text/plain', animal.name);
-        zooAnimal.dataset.dragging = true;
-        zooAnimal.style.transform = 'scale(1.1) translateY(-4px)';
-      });
-
-      zooAnimal.addEventListener('dragend', (e) => {
-        const zooRect = zooEl.getBoundingClientRect();
-        const x = e.pageX - zooRect.left - 40;
-        const y = e.pageY - zooRect.top - 40;
-        const maxX = zooEl.offsetWidth - 80;
-        const maxY = zooEl.offsetHeight - 80;
-
-        const clampedX = Math.max(0, Math.min(x, maxX));
-        const clampedY = Math.max(0, Math.min(y, maxY));
-
-        zooAnimal.style.left = `${clampedX}px`;
-        zooAnimal.style.top = `${clampedY}px`;
-        zooAnimal.style.transform = 'scale(1)';
-        zooAnimal.dataset.dragging = false;
-      });
-
-      zooEl.appendChild(zooAnimal);
+      placeAnimal(animal);
     };
   });
 });
