@@ -163,7 +163,7 @@ export function submitAnswer() {
         const winModal = new bootstrap.Modal(document.getElementById("winModal"));
         winModal.show();
         launchConfetti();
-        updatePerformance("game7", mistakes, startTime);
+        updatePerformance("game3", mistakes, startTime);
       }, 600);
     } else {
       setTimeout(generateEquation, 1200);
