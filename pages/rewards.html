@@ -4,71 +4,162 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rewards - MathQuest</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  
-  <link rel="stylesheet" href="styles/style.css">
-  <link rel="stylesheet" href="styles/mathQuest.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="styles/style.css" />
+  <link rel="stylesheet" href="styles/mathQuest.css" />
+
+  <script type="module">
+    import { auth, db } from "../firebase.js";
+    import { doc, getDoc, updateDoc } from "firebase/firestore";
+    import { onAuthStateChanged } from "firebase/auth";
+
+    let currentUser = null;
+    let userCoins = 0;
+    let featureUnlocked = false;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          const userData = userSnap.data();
+          userCoins = userData.coins || 0;
+          featureUnlocked = userData.unlocked_features?.[0] === 1;
+
+          document.getElementById("coinCount").textContent = `🪙 ${userCoins} Coins`;
+
+          const vrCard = document.getElementById("vrCard");
+          const vrLink = document.getElementById("vrLink");
+          const lockOverlay = document.getElementById("vrLock");
+
+          if (featureUnlocked) {
+            vrCard.classList.add("unlocked");
+            if (lockOverlay) lockOverlay.style.display = "none";
+            vrLink.setAttribute("href", "/pages/VR-GAMES/vrmenu.html");
+          }
+        }
+      }
+    });
+
+    window.unlockVRGame = async function (event) {
+      event.preventDefault();
+      if (!currentUser) return alert("Please log in.");
+      if (featureUnlocked) {
+        window.location.href = "/pages/VR-GAMES/vrmenu.html";
+        return;
+      }
+
+      const popup = document.getElementById("confirmationPopup");
+      const confirmBtn = popup.querySelector(".btn-success");
+
+      if (userCoins < 50) {
+        popup.querySelector("p").textContent = "You need 50 coins to unlock this game.";
+        confirmBtn.style.display = "none";
+      } else {
+        popup.querySelector("p").textContent = "Spend 50 coins to unlock this game?";
+        confirmBtn.style.display = "inline-block";
+      }
+
+      popup.style.display = "block";
+    };
+
+    window.confirmUnlock = async function () {
+      const userRef = doc(db, "users", currentUser.uid);
+      const userSnap = await getDoc(userRef);
+      if (!userSnap.exists()) return;
+
+      const userData = userSnap.data();
+      const newCoins = userData.coins - 50;
+      const updatedFeatures = userData.unlocked_features || [];
+      updatedFeatures[0] = 1;
+
+      await updateDoc(userRef, {
+        coins: newCoins,
+        unlocked_features: updatedFeatures,
+      });
+
+      alert("🎉 Game Unlocked!");
+      window.location.href = "/pages/VR-GAMES/vrmenu.html";
+    };
+
+    window.closePopup = function () {
+      document.getElementById("confirmationPopup").style.display = "none";
+    };
+  </script>
+
   <style>
     body {
-      background-color: #fdf7ef;
+      background: linear-gradient(to bottom, #fffdf4, #fceee3);
+      font-family: "Comic Sans MS", "Segoe UI", sans-serif;
+    }
+
+    .reward-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 2rem;
+    }
+
+    #coinCount {
+      font-size: 1.3rem;
+      background: #fff3cd;
+      color: #856404;
+      padding: 0.5rem 1rem;
+      border-radius: 30px;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
     }
 
     .reward-previews {
       display: flex;
       justify-content: center;
-      gap: 2.5rem;
+      gap: 2rem;
       flex-wrap: wrap;
-      margin-top: 2.5rem;
-      margin-bottom: 2rem;
+      margin: 2rem 0 4rem;
     }
 
     .card-preview {
       position: relative;
       width: 280px;
-      border-radius: 20px;
+      border-radius: 25px;
       overflow: hidden;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
-      cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+      transition: transform 0.3s ease;
+      text-decoration: none;
+    }
+
+    .card-preview.unlocked:hover {
+      transform: scale(1.04);
     }
 
     .card-preview img {
       width: 100%;
       display: block;
-      transition: opacity 0.3s ease;
     }
 
     .card-preview .overlay {
+      background-color: #ff6b6b;
+      color: white;
+      font-weight: bold;
+      font-size: 1.2rem;
+      text-align: center;
+      padding: 0.75rem;
+    }
+
+    .locked-overlay {
       position: absolute;
       top: 0;
       left: 0;
+      background: rgba(0, 0, 0, 0.5);
       width: 100%;
       height: 100%;
-      background-color: rgba(60, 30, 10, 0.6);
+      z-index: 2;
       display: flex;
       align-items: center;
       justify-content: center;
-      opacity: 0;
-      transition: opacity 0.3s ease;
       color: white;
-      font-size: 1.4rem;
+      font-size: 1.2rem;
       font-weight: bold;
-      text-align: center;
-      padding: 1rem;
-      text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
-    }
-
-    .card-preview:hover {
-      transform: scale(1.03);
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.18);
-    }
-
-    .card-preview:hover img {
-      opacity: 0.3;
-    }
-
-    .card-preview:hover .overlay {
-      opacity: 1;
     }
 
     .popup {
@@ -77,81 +168,67 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background-color: white;
-      border: 2px solid #ccc;
-      padding: 20px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      z-index: 10;
-      border-radius: 10px;
+      background: white;
+      border-radius: 15px;
+      padding: 2rem;
+      text-align: center;
+      width: 300px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
     }
 
     h1.display-4 {
-      font-weight: 700;
-      margin-bottom: 1rem;
+      font-weight: bold;
+      color: #333;
     }
 
     .lead {
-      font-size: 1.2rem;
-      color: #555;
+      color: #444;
+      margin-bottom: 2rem;
     }
   </style>
 </head>
 <body>
 
+  <!-- BEHOUD HEADER -->
   <div id="header"></div>
 
-  <main>
-    <section class="text-center py-5">
-      <div class="container">
+  <main class="py-5 text-center">
+    <div class="container">
+      <div class="reward-header">
         <h1 class="display-4">Reward Center!</h1>
-        <p class="lead">You've earned some points! Choose what you'd like to do:</p>
-
-        <div class="reward-previews">
-          <a href="/pages/VR-GAMES/vrmenu.html" onclick="unlockVRGame(event)" class="card-preview">
-            <img src="/pages/VR-GAMES/appleMath.webp" alt="VR Game Preview" />
-            <div class="overlay">🍎 Start Apple Math</div>
-          </a>
-          <a href="zoo_customization.html" class="card-preview">
-            <img src="/pages/assets/animals/zoo.jpg" alt="Zoo Preview" />
-            <div class="overlay">🦁 Open My Zoo</div>
-          </a>
-        </div>
+        <div id="coinCount">🪙 0 Coins</div>
       </div>
-    </section>
+      <p class="lead">You've earned some points! Choose what you'd like to do:</p>
+
+      <div class="reward-previews">
+        <!-- VR Game -->
+        <a id="vrLink" href="#" onclick="unlockVRGame(event)" class="card-preview unlocked" >
+          <img src="/pages/VR-GAMES/appleMath.webp" alt="Apple Math Game" />
+          <div id="vrLock" class="locked-overlay">🔒 Locked</div>
+          <div class="overlay">🍎 Start Apple Math</div>
+        </a>
+
+        <!-- Zoo Game -->
+        <a href="zoo_customization.html" class="card-preview unlocked">
+          <img src="/pages/assets/animals/zoo.jpg" alt="Zoo Game" />
+          <div class="overlay">🦁 Open My Zoo</div>
+        </a>
+      </div>
+    </div>
   </main>
 
   <div class="popup" id="confirmationPopup">
     <h4>Unlock VR Game</h4>
-    <p>Do you want to spend 10 coins to unlock the VR Game?</p>
+    <p></p>
     <button class="btn btn-success" onclick="confirmUnlock()">Yes, unlock it!</button>
     <button class="btn btn-danger" onclick="closePopup()">Cancel</button>
   </div>
 
+  <!-- BEHOUD FOOTER -->
   <div id="footer"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/pages/scripts/include.js"></script>
-  <script>
-    let userCoins = 10;
-
-    function unlockVRGame(event) {
-      event.preventDefault();
-      if (userCoins >= 10) {
-        document.getElementById('confirmationPopup').style.display = 'block';
-      } else {
-        alert('You do not have enough coins to unlock the VR game!');
-      }
-    }
-
-    function confirmUnlock() {
-      userCoins -= 10;
-      alert("Game Unlocked! Redirecting...");
-      window.location.href = "vr_game.html"; // Pas aan indien nodig
-    }
-
-    function closePopup() {
-      document.getElementById('confirmationPopup').style.display = 'none';
-    }
-  </script>
 </body>
 </html>

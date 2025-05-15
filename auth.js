@@ -58,6 +58,7 @@ export async function handleRegister(event) {
       time_game12: [],
       retryFrequency_game12: [],
       difficulty_game12: 1,
+      unlocked_features:[0]
     });
 
     alert('Registration successful! You can now log in.');
