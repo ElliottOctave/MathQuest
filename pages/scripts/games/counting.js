@@ -67,7 +67,7 @@ function handleClick(num, balloon) {
 
     if (totalClicks >= 10) {
       setTimeout(() => {
-        updatePerformance("game3", mistakes, startTime);
+        updatePerformance("game4", mistakes, startTime);
         const winModal = new bootstrap.Modal(document.getElementById("winModal"));
         winModal.show();
         launchConfetti();

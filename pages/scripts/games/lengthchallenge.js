@@ -114,7 +114,7 @@ function correctAnswer() {
     setTimeout(() => {
       const win = new bootstrap.Modal(document.getElementById("winModal"));
       win.show();
-      updatePerformance("game5", mistakes, startTime);
+      updatePerformance("game7", mistakes, startTime);
       launchConfetti();
     }, 500);
   } else {
