@@ -91,9 +91,13 @@
   background-color: #dee2e6;
   color: #333;
   border-left: 6px solid #adb5bd;
-  cursor: default;
-  pointer-events: none;
+  opacity: 0.95;
 }
+
+.gray-tile:hover {
+  opacity: 1;
+}
+
 
 .game-tile strong {
   font-size: 1.1rem;

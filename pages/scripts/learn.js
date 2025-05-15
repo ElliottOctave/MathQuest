@@ -84,7 +84,8 @@ function createTile({ gameId, avg, retryArr }) {
   const wrapper = document.querySelector(`#${section}-tiles`);
   let tileClass = "gray-tile";
   let message;
-  let tile = document.createElement("div");
+  const tile = document.createElement("a");
+  tile.href = link;
 
   if (retryArr.length >= 5) {
     if (avg <= 1) {
@@ -97,8 +98,6 @@ function createTile({ gameId, avg, retryArr }) {
       tileClass = "red-tile";
       message = `${name} ${getUniqueRandom("red")}`;
     }
-    tile = document.createElement("a");
-    tile.href = link;
   } else {
     if (retryArr.length === 0) {
       message = getUniqueRandom("notPlayed");
@@ -111,6 +110,7 @@ function createTile({ gameId, avg, retryArr }) {
   tile.innerHTML = `<strong>${name}</strong><div>${message}</div>`;
   wrapper.appendChild(tile);
 }
+
 
 async function generateDashboardTiles() {
   auth.onAuthStateChanged(async (user) => {
