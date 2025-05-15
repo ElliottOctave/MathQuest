@@ -87,7 +87,7 @@ export function submitAnswer() {
         const win = new bootstrap.Modal(document.getElementById("winModal"));
         win.show();
         launchConfetti();
-        updatePerformance("game8", mistakes, startTime);
+        updatePerformance("game6", mistakes, startTime);
       }, 600);
     } else {
       console.log(game_difficulty);
