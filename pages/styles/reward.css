@@ -1,0 +1,56 @@
+/* Lock with grey color when locked */
+.locked {
+    background-color: #b3b3b3;
+    cursor: not-allowed;
+    position: relative;
+    padding-left: 50px;
+}
+
+.locked:hover {
+    background-color: #b3b3b3;
+    /* Make sure it stays gray even on hover */
+}
+
+.unlocked {
+    background-color: #28a745;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.unlocked:hover {
+    background-color: #218838;
+}
+
+.unlock-animation {
+    animation: unlock 1s forwards;
+}
+
+@keyframes unlock {
+    0% {
+        opacity: 0;
+        transform: scale(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Confirmation popup styling */
+.popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border: 2px solid #ccc;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.popup button {
+    margin-top: 10px;
+}
