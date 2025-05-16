@@ -39,8 +39,6 @@ if (userNav) {
       const userSnap = await getDoc(userRef);
       const userData = userSnap.data();
       console.log("User data:", userData);
-      const level = userData.level || 1;
-      const xp = userData.experience || 0;
       const coins = userData.coins || 0;
 
       userNav.innerHTML = `
@@ -48,15 +46,10 @@ if (userNav) {
           ${userData.username || user.email}
         </a>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown" style="min-width: 250px;">
-          <li class="px-3 py-2">
-            <div class="fw-bold mb-1">Level ${level}</div>
-            <div class="progress mb-2" style="height: 8px;">
-              <div class="progress-bar" role="progressbar" style="width: ${xp}%" aria-valuenow="${xp}" aria-valuemin="0" aria-valuemax="100"></div>
-            </div>
+          <li class="px-3 py-2 text-center">
             <div><strong>Coins:</strong> ${coins}</div>
           </li>
           <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item text-center" href="/pages/profile.html">Edit Profile</a></li>
           <li><a class="dropdown-item text-center text-danger" href="#" id="logoutBtn">Logout</a></li>
         </ul>
       `;
