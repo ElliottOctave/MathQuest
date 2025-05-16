@@ -3,7 +3,6 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.m
 function createAppleCounterPanel(scene) {
   const text = `🍎 0`;
 
-  // Measure text to size canvas dynamically
   const tempCanvas = document.createElement('canvas');
   const tempCtx = tempCanvas.getContext('2d');
   tempCtx.font = 'bold 48px Arial';
@@ -18,15 +17,15 @@ function createAppleCounterPanel(scene) {
   canvas.height = canvasHeight;
   const ctx = canvas.getContext('2d');
 
-  // 🟦 Soft blue background
+  // blue background
   ctx.fillStyle = '#3A73A8';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // ✍️ Apple counter text
+  // apple counter 
   ctx.fillStyle = '#FFD700';
   ctx.font = 'bold 48px Arial';
   ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle'; // ✅ center vertically
+  ctx.textBaseline = 'middle';
   ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 
   const texture = new THREE.CanvasTexture(canvas);
@@ -48,7 +47,7 @@ function createAppleCounterPanel(scene) {
   panel.position.set(2, 2, 0);
   scene.add(panel);
 
-  return { texture, ctx, panel, canvas }; // 👈 optional but helpful
+  return { texture, ctx, panel, canvas }; 
 }
 
 
@@ -87,7 +86,7 @@ function createTutorialPanel(scene, camera) {
       const remainder = n % 2;
       let str = '';
       for (let i = 0; i < groups; i++) {
-        str += '🍎🍎   ';  // spacing
+        str += '🍎🍎   '; 
       }
       if (remainder) str += '🍎';
       return str.trim();
@@ -97,13 +96,13 @@ function createTutorialPanel(scene, camera) {
     const apples2 = buildGroupedApples(num2);
     const fullText = `${apples1} + ${apples2} = ?`;
 
-    // 🔢 Dynamically measure text width
+    // measure text width
     const tempCanvas = document.createElement('canvas');
     const tempCtx = tempCanvas.getContext('2d');
     tempCtx.font = '72px Arial';
     const textWidth = tempCtx.measureText(fullText).width;
 
-    // 🧱 Add padding and round to nearest 256
+    
     const canvasWidth = Math.ceil((textWidth + 100) / 256) * 256;
     const canvasHeight = 256;
 
@@ -126,7 +125,6 @@ function createTutorialPanel(scene, camera) {
     const texture = new THREE.CanvasTexture(canvas);
     const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide, transparent: true });
 
-    // 🧮 Match panel width to canvas aspect ratio
     const panelWidth = (canvas.width / canvas.height) * 0.8;
     const panel = new THREE.Mesh(new THREE.PlaneGeometry(panelWidth, 0.8), material);
     panel.position.set(0, 3, -1.5);
@@ -159,7 +157,7 @@ function createTutorialPanel(scene, camera) {
     const geometry = new THREE.PlaneGeometry(2.5, 0.6);
     const panel = new THREE.Mesh(geometry, material);
   
-    // Position 1.5m in front of camera
+
     const camWorldPos = new THREE.Vector3();
     camera.getWorldPosition(camWorldPos);
     const camDir = new THREE.Vector3();
@@ -168,7 +166,6 @@ function createTutorialPanel(scene, camera) {
     const panelPos = camWorldPos.clone().add(camDir.multiplyScalar(1.5));
     panel.position.copy(panelPos);
   
-    // Rotate to face camera
     panel.lookAt(camWorldPos);
   
     scene.add(panel);

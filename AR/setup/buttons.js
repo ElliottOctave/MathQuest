@@ -6,15 +6,15 @@ import { checkAnswer } from '../logic/answer.js';
 function createButtonPanel(label, position, callback, scene, gameState) {
     // Cube button
     const button = new THREE.Mesh(
-        new THREE.BoxGeometry(0.2, 0.1, 0.2), // Slightly larger
+        new THREE.BoxGeometry(0.2, 0.1, 0.2), 
         new THREE.MeshStandardMaterial({
             color: label === 'Confirm' ? '#4CAF50' : '#F44336'
         })
     );
     button.position.copy(position);
-    button.userData.onClick = callback;         // ✅ Callback
-    button.userData.interactive = true;         // ✅ Tag as interactive
-    gameState.interactiveButtons.push(button);  // ✅ Push the actual mesh, not label
+    button.userData.onClick = callback;        
+    button.userData.interactive = true;         
+    gameState.interactiveButtons.push(button); 
     scene.add(button);
 
     // Floating label
@@ -32,12 +32,12 @@ function createButtonPanel(label, position, callback, scene, gameState) {
     const texture = new THREE.CanvasTexture(canvas);
     const labelMaterial = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
     const labelPlane = new THREE.Mesh(new THREE.PlaneGeometry(0.2, 0.05), labelMaterial);
-    labelPlane.position.set(0, 0.07, 0); // on top of cube
+    labelPlane.position.set(0, 0.07, 0); 
     button.add(labelPlane);
 }
 
 export function createButtonTable(scene, gameState) {
-    // 🪑 Table in front of basket
+    // Table 
     const table = new THREE.Mesh(
         new THREE.BoxGeometry(0.6, 0.3, 0.6),
         new THREE.MeshStandardMaterial({ color: '#8B5A2B' })
@@ -49,7 +49,7 @@ export function createButtonTable(scene, gameState) {
     table.position.y = 0.15;
     scene.add(table);
 
-    // 🎯 Button positions (on top of table)
+    // Button positions 
     const confirmPos = table.position.clone().add(new THREE.Vector3(0.00, 0.2, 0.15));
     const removePos = table.position.clone().add(new THREE.Vector3(0.02, 0.2, -0.15));
 
@@ -74,8 +74,8 @@ export function createButtonTable(scene, gameState) {
 
             scene.add(thrownApple);
 
-            // 🛫 Make it jump upward and slightly forward
-            const direction = new THREE.Vector3(0, 1.5, -1).normalize(); // Up and forward
+            // jumped apple
+            const direction = new THREE.Vector3(0, 1.5, -1).normalize(); 
             const speed = 0.05 + Math.random() * 0.01;
 
             gameState.fallingApples.push({
@@ -89,7 +89,7 @@ export function createButtonTable(scene, gameState) {
 
 
 
-    // 🪧 Instruction Label (above & further than buttons)
+    // Instruction Label 
     const canvas = document.createElement('canvas');
     canvas.width = 1024;
     canvas.height = 128;

@@ -1,3 +1,4 @@
+// fence.js
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js';
 
 function createRusticFence(scene) {
@@ -6,7 +7,7 @@ function createRusticFence(scene) {
   const coneHeight = 0.1;
 
   const fenceRadius = 3.5;
-  const postCount = 150; // More posts for full wrap
+  const postCount = 150;
 
   for (let i = 0; i < postCount; i++) {
     const angle = (i / postCount) * Math.PI * 2;
