@@ -186,3 +186,24 @@ onAuthStateChanged(auth, async (user) => {
     };
   });
 });
+
+
+// Ensure this function is called after DOM is loaded
+document.addEventListener("DOMContentLoaded", () => {
+  const clearBtn = document.querySelector(".zoo-clear");
+  if (clearBtn) {
+    clearBtn.addEventListener("click", async () => {
+      // Remove animals from UI
+      document.querySelectorAll(".zoo-animal").forEach((a) => a.remove());
+
+      // Clear in Firestore
+      if (!auth.currentUser) return;
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      await updateDoc(userRef, {
+        zooPositions: {}
+      });
+
+      console.log("Zoo cleared successfully");
+    });
+  }
+});
