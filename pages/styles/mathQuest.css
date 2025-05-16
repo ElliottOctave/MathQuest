@@ -1,98 +1,184 @@
 /* mathQuest.css */
 
-/* Use a fun font for headers */
-@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+/* Fun fonts */
+@import url('https://fonts.googleapis.com/css2?family=Chewy&display=swap');
 
+/* Basic layout */
 body {
-  background-color: #fef6e4;
-  font-family: 'Comic Sans MS', 'Fredoka One', cursive, sans-serif;
-}
-
-/* Navbar in vibrant colors */
-.navbar {
-  background-color: #ff6b6b !important;
-}
-
-.navbar-brand {
-  font-size: 1.8rem;
-  font-weight: bold;
-}
-
-.navbar .nav-link {
-  color: #fff !important;
-}
-
-.navbar .nav-link:hover {
-  color: #ffe066 !important;
+  background: linear-gradient(135deg, #ffdde1, #fef6e4); /* Gradient from new CSS, ends with original color */
+  font-family: "Chewy", system-ui;
+  font-weight: 400;
+  font-style: normal;
+  overflow-x: hidden;
 }
 
 main {
-    min-height: 85vh;
+  min-height: 85vh; /* Kept from original CSS */
 }
 
 /* Hero section */
 .hero {
-  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2)),
-              url('../assets/background.avif') center/cover;
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3)),
+              url('../assets/background.avif') center/cover; /* Updated from new CSS */
   color: #fff;
-  font-family: 'Fredoka One', cursive;
-  padding-bottom: 50px; /* Add padding bottom to create space below */
+  padding-bottom: 50px; /* Kept from original CSS */
 }
 
 .hero h1 {
-  font-size: 3.5rem;
+  font-size: 3.5rem; /* Kept from original CSS */
+  color: #fff5e1; /* From new CSS */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* From new CSS */
 }
 
 .hero p {
-  font-size: 1.3rem;
-  color: #ffe066;
+  font-size: 1.3rem; /* Kept from original CSS */
+  color: #ffe066; /* From new CSS */
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2); /* From new CSS */
 }
 
-/* Features with cartoon icons */
+/* Star animation (from new CSS) */
+.star-animation {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: radial-gradient(circle, #fff5e1, #ffe066);
+  border-radius: 50%;
+  animation: twinkle 2s infinite alternate;
+  top: 10%;
+  left: 10%;
+}
+
+@keyframes twinkle {
+  0% { opacity: 0.3; }
+  100% { opacity: 0.8; transform: scale(1.2); }
+}
+
+/* Features */
 .features h3 {
-  font-size: 1.5rem;
+  font-size: 1.5rem; /* Kept from original CSS */
   color: #4dabf7;
+  text-shadow: 1px 1px 2px rgba(77, 171, 247, 0.3); /* From new CSS */
+  margin-top: 10px; /* From new CSS */
 }
 
 .features p {
-  font-size: 1.1rem;
+  font-size: 1.1rem; /* Kept from original CSS */
   color: #555;
+  margin-top: 5px; /* From new CSS */
+}
+
+/* Childish containers (from new CSS) */
+.childish-container {
+  border: 4px dashed #f6c90e;
+  border-radius: 30px;
+  padding: 20px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.text-content {
+  margin-top: 15px;
+}
+
+.adaptive {
+  background: linear-gradient(135deg, #c8e6c9, #a5d6a7); /* Soft green */
+}
+
+.gamified {
+  background: linear-gradient(135deg, #ffccbc, #ffab91); /* Warm orange */
+}
+
+.multi {
+  background: linear-gradient(135deg, #b3e5fc, #81d4fa); /* Light blue */
+}
+
+/* Bounce animation for icons (from new CSS) */
+.bounce {
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-10px); }
+  60% { transform: translateY(-5px); }
 }
 
 /* Buttons with fun colors */
-button.btn {
-  font-size: 1.2rem;
+.btn, .btn-play { /* Support both classes for compatibility */
+  font-size: 2rem; /* From new CSS */
+  padding: 20px 40px; /* From new CSS */
   border-radius: 20px;
+  border: none;
+  background: linear-gradient(45deg, #ff6b6b, #ff8e53); /* From new CSS */
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6); /* From new CSS */
   transition: transform 0.3s ease;
-  margin-top: 50px; /* Move the button lower by adding margin-top */
+  margin-top: 50px; /* Kept from original CSS */
+  animation: pulse 2s infinite; /* From new CSS */
 }
 
-button.btn:hover {
-  transform: scale(1.05);
+.btn:hover, .btn-play:hover {
+  transform: scale(1.15); /* From new CSS */
+  box-shadow: 0 10px 30px rgba(255, 107, 107, 0.8); /* From new CSS */
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
 }
 
 /* Cards for rewards */
 .card {
   border-radius: 20px;
-  background: #fff9db;
+  background: linear-gradient(135deg, #fff9db, #ffe4b5); /* Updated from new CSS */
   border: 2px dashed #f6c90e;
   transition: transform 0.3s ease;
 }
 
 .card:hover {
-  transform: scale(1.05);
+  transform: scale(1.05); /* Kept from original CSS */
 }
 
 /* Modals */
 .modal-content {
   border-radius: 20px;
-  background-color: #fff3cd;
+  background: linear-gradient(135deg, #fff3cd, #ffe0a3); /* Updated from new CSS */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* From new CSS */
 }
 
 /* Footer */
 footer {
-  background-color: #343a40;
-  font-size: 0.9rem;
+  background: linear-gradient(90deg, #343a40, #2c2f33); /* Updated from new CSS */
+  color: #fff5e1; /* From new CSS */
+  font-size: 0.9rem; /* Kept from original CSS */
+  padding: 20px 0; /* From new CSS */
+}
+
+/* Navbar */
+.navbar {
+  background: linear-gradient(90deg, #ff6b6b, #ff8e53) !important; /* Updated from new CSS */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* From new CSS */
+}
+
+.navbar-brand {
+  font-size: 1.8rem; /* Kept from original CSS */
+  font-weight: bold;
+  color: #fff5e1 !important; /* From new CSS */
+}
+
+.navbar .nav-link {
+  color: #fff5e1 !important; /* From new CSS */
+  font-size: 1.1rem; /* From new CSS */
+}
+
+.navbar .nav-link:hover {
+  color: #ffe066 !important;
+  text-shadow: 0 0 5px #ffe066; /* From new CSS */
 }
 
 /* Topic Buttons in Learn Page */
@@ -100,27 +186,37 @@ footer {
   padding: 15px;
   font-size: 1.3rem;
   font-weight: bold;
-  background-color: #e0f7fa;
+  background: linear-gradient(135deg, #e0f7fa, #b2ebf2); /* Updated from new CSS */
   border: 3px solid #4dd0e1;
   color: #00796b;
   border-radius: 15px;
+  transition: all 0.3s ease; /* From new CSS */
 }
 
 .learn-section button:hover {
-  background-color: #b2ebf2;
+  background: linear-gradient(135deg, #b2ebf2, #80deea); /* Updated from new CSS */
+  transform: translateY(-5px); /* From new CSS */
+  box-shadow: 0 5px 15px rgba(77, 208, 225, 0.4); /* From new CSS */
 }
 
-/* Responsive fix for smaller screens */
+/* Responsive design */
 @media (max-width: 768px) {
   .hero h1 {
     font-size: 2.5rem;
   }
 
   .hero p {
-    font-size: 1rem;
+    font-size: 1rem; /* Adjusted from original CSS */
   }
 
-  button.btn {
-    margin-top: 30px; /* Adjust button position for smaller screens */
+  .btn, .btn-play {
+    font-size: 1.5rem; /* From new CSS */
+    padding: 15px 30px; /* From new CSS */
+    margin-top: 30px; /* Kept from original CSS */
+  }
+
+  .childish-container {
+    padding: 15px;
+    border-radius: 20px;
   }
 }

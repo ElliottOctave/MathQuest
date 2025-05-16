@@ -101,7 +101,7 @@
 
 .game-tile strong {
   font-size: 1.1rem;
-  min-height: 1.8em; /* zorgt dat alle titels op gelijke hoogte beginnen */
+  min-height: 1.8em; 
   display: block;
   margin-bottom: 0;
 }

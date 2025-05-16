@@ -9,35 +9,47 @@
   <link rel="stylesheet" href="/pages/styles/mathQuest.css">
 </head>
 <body>
-
   <!-- Load header dynamically -->
   <div id="header"></div>
 
-  <main>
-    <section class="hero text-white text-center py-5">
-      <div class="container">
-        <h1 class="display-4">Welcome to MathQuest</h1>
-        <p class="lead">A personalized learning adventure designed for first-grade heroes!</p>
+  <main class="d-flex flex-column">
+    <section class="hero text-white text-center py-5 position-relative overflow-hidden flex-grow-1">
+      <div class="container d-flex flex-column justify-content-center h-100">
+        <h1 class="display-4 animated-text">Welcome to MathQuest</h1>
+        <p class="lead">A super fun learning adventure for first-grade heroes!</p>
+        <div class="star-animation"></div>
       </div>
     </section>
 
-    <section class="features text-center py-5">
-      <div class="container">
+    <section class="features text-center py-5 flex-grow-1">
+      <div class="container d-flex flex-column justify-content-center h-100">
         <div class="row g-4">
           <div class="col-md-4">
-            <img src="/pages/assets/reading-book.png" alt="Adaptive" width="80">
-            <h3>Adaptive Learning</h3>
-            <p>Exercises that grow with your brain power!</p>
+            <div class="childish-container adaptive">
+              <img src="/pages/assets/reading-book.png" alt="Adaptive" width="80" class="bounce">
+              <div class="text-content">
+                <h3>Adaptive Learning</h3>
+                <p>Exercises that grow with your brain power!</p>
+              </div>
+            </div>
           </div>
           <div class="col-md-4">
-            <img src="/pages/assets/game-console.png" alt="Gamified" width="80">
-            <h3>Gamified Progress</h3>
-            <p>Earn stars, badges and unlock cool games!</p>
+            <div class="childish-container gamified">
+              <img src="/pages/assets/game-console.png" alt="Gamified" width="80" class="bounce">
+              <div class="text-content">
+                <h3>Gamified Progress</h3>
+                <p>Earn stars, badges, and cool games!</p>
+              </div>
+            </div>
           </div>
           <div class="col-md-4">
-            <img src="/pages/assets/responsive.png" alt="Devices" width="80">
-            <h3>Multi-Platform</h3>
-            <p>Play anywhere — tablet, PC or VR headset!</p>
+            <div class="childish-container multi">
+              <img src="/pages/assets/responsive.png" alt="Devices" width="80" class="bounce">
+              <div class="text-content">
+                <h3>Multi-Platform</h3>
+                <p>Play anywhere — tablet, PC, or VR!</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -46,7 +58,7 @@
     <!-- Play Now Button -->
     <section class="text-center py-5">
       <div class="container">
-        <a href="learn.html" class="btn btn-lg btn-primary text-white px-5 py-3">
+        <a href="learn.html" class="btn btn-lg btn-play text-white px-5 py-3 rounded-pill shadow-lg">
           🎮 Play Now
         </a>
       </div>
@@ -62,6 +74,5 @@
   <script src="/pages/scripts/include.js"></script>
   <script type="module" src="/firebase.js"></script>
   <script type="module" src="/auth.js"></script>
-
 </body>
 </html>
