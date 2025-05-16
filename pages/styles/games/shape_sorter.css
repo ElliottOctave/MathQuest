@@ -1,0 +1,82 @@
+body {
+  background: url('../../assets/shape_sorter/forest.jpg') no-repeat center center fixed;
+  background-size: cover;
+  font-family: 'Comic Sans MS', cursive;
+}
+
+.container {
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  border: 4px solid #e67e22;
+  padding: 30px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.game-title {
+  font-family: 'Luckiest Guy', cursive;
+  font-size: 2.8rem;
+  color: #e67e22;
+  text-shadow: 2px 2px #ffe066;
+}
+
+.story-block {
+  position: relative;
+}
+
+.sound-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+}
+
+.story-text {
+  font-size: 1.3rem;
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.6;
+  color: #333;
+}
+
+.draggable-shape {
+  font-size: 40px;
+  cursor: grab;
+  user-select: none;
+}
+
+.draggable-shape.small {
+  font-size: 30px;
+  margin: 2px;
+}
+
+.drop-zone {
+  min-height: 100px;
+  border: 3px dashed #ccc;
+  border-radius: 12px;
+  padding: 15px;
+  background-color: #fefefe;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s;
+}
+.drop-zone:hover {
+  background-color: #f0f8ff;
+}
+
+
+.drop-label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.correct {
+  color: #28a745;
+}
+
+.incorrect {
+  color: #dc3545;
+}

@@ -3,7 +3,7 @@
 
     const animalPics = [
       "bear.webp", "cooper.png", "dot.png", "fox.png", "lemur.webp", 
-      "monkey.png", "professor.png", "rabbit.webp", "timmy.webp", "zuri.png"
+      "monkey.png", "professor.png", "rabbit.webp", "timmy.webp", "zuri.png", "squirrel.webp"
     ];
 
     const displayNames = animalPics.map(name => name.split(".")[0]);
