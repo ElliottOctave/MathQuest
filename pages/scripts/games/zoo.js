@@ -21,10 +21,12 @@ const zooGuide = document.getElementById('zoo-guide');
 const coinDisplay = document.getElementById('coinDisplay');
 let currentUser = null;
 
+// Clear zoo
 function resetZoo() {
   document.querySelectorAll('.zoo-animal').forEach(a => a.remove());
 }
 
+// Add animal to zoo
 function placeAnimal(animal, position) {
   const zooAnimal = document.createElement('img');
   zooAnimal.src = `assets/animals/${animal.img}`;
@@ -35,19 +37,21 @@ function placeAnimal(animal, position) {
   const zooWidth = zooEl.offsetWidth;
   const zooHeight = zooEl.offsetHeight;
 
-  // Use saved position if available
+  // Set position
   const left = position ? zooWidth * position.left : (zooWidth - 80) / 2;
   const top = position ? zooHeight * position.top : zooHeight - 100;
 
   zooAnimal.style.left = `${left}px`;
   zooAnimal.style.top = `${top}px`;
 
+  // Start drag
   zooAnimal.addEventListener('dragstart', (e) => {
     e.dataTransfer.setData('text/plain', animal.name);
     zooAnimal.dataset.dragging = true;
     zooAnimal.style.transform = 'scale(1.1) translateY(-4px)';
   });
 
+  // End drag and save position
   zooAnimal.addEventListener('dragend', async (e) => {
     zooAnimal.style.transform = 'scale(1)';
     zooAnimal.dataset.dragging = false;
@@ -82,6 +86,7 @@ function placeAnimal(animal, position) {
   zooEl.appendChild(zooAnimal);
 }
 
+// Check user login
 onAuthStateChanged(auth, async (user) => {
   if (!user) return;
   currentUser = user;
@@ -97,6 +102,7 @@ onAuthStateChanged(auth, async (user) => {
 
   coinDisplay.textContent = `Coins: ${coins}`;
 
+  // Build shop
   animals.forEach(animal => {
     const wrapper = document.createElement("div");
     wrapper.className = 'animal-card d-flex align-items-center justify-content-between';
@@ -135,6 +141,7 @@ onAuthStateChanged(auth, async (user) => {
     wrapper.appendChild(btnContainer);
     shopEl.appendChild(wrapper);
 
+    // Show owned animals
     if (owned.includes(animal.name)) {
       img.classList.add("owned");
       btnBuy.disabled = true;
@@ -143,10 +150,12 @@ onAuthStateChanged(auth, async (user) => {
       btnPlace.style.display = "inline-block";
     }
 
+    // Place saved animals
     if (zooPositions[animal.name]) {
       placeAnimal(animal, zooPositions[animal.name]);
     }
 
+    // Buy animal
     btnBuy.onclick = async () => {
       const userSnap = await getDoc(userRef);
       const data = userSnap.data();
@@ -170,6 +179,7 @@ onAuthStateChanged(auth, async (user) => {
       btnPlace.style.display = "inline-block";
     };
 
+    // Place animal
     btnPlace.onclick = () => {
       if (document.getElementById(`zoo-${animal.name}`)) return;
       placeAnimal(animal);

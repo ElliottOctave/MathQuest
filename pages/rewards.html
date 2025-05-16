@@ -8,85 +8,6 @@
   <link rel="stylesheet" href="styles/style.css" />
   <link rel="stylesheet" href="styles/mathQuest.css" />
 
-  <script type="module">
-    import { auth, db } from "../firebase.js";
-    import { doc, getDoc, updateDoc } from "firebase/firestore";
-    import { onAuthStateChanged } from "firebase/auth";
-
-    let currentUser = null;
-    let userCoins = 0;
-    let featureUnlocked = false;
-
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        currentUser = user;
-        const userRef = doc(db, "users", user.uid);
-        const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) {
-          const userData = userSnap.data();
-          userCoins = userData.coins || 0;
-          featureUnlocked = userData.unlocked_features?.[0] === 1;
-
-          document.getElementById("coinCount").textContent = `🪙 ${userCoins} Coins`;
-
-          const vrLink = document.getElementById("vrLink");
-          const lockOverlay = document.getElementById("vrLock");
-
-          if (featureUnlocked) {
-            vrLink.classList.add("unlocked");
-            if (lockOverlay) lockOverlay.style.display = "none";
-            vrLink.setAttribute("href", "/pages/VR-GAMES/vrmenu.html");
-          }
-        }
-      }
-    });
-
-    window.unlockVRGame = async function (event) {
-      event.preventDefault();
-      if (!currentUser) return alert("Please log in.");
-      if (featureUnlocked) {
-        window.location.href = "/pages/VR-GAMES/vrmenu.html";
-        return;
-      }
-
-      const popup = document.getElementById("confirmationPopup");
-      const confirmBtn = popup.querySelector(".btn-success");
-
-      if (userCoins < 50) {
-        popup.querySelector("p").textContent = "You need 50 coins to unlock this game.";
-        confirmBtn.style.display = "none";
-      } else {
-        popup.querySelector("p").textContent = "Spend 50 coins to unlock this game?";
-        confirmBtn.style.display = "inline-block";
-      }
-
-      popup.style.display = "block";
-    };
-
-    window.confirmUnlock = async function () {
-      const userRef = doc(db, "users", currentUser.uid);
-      const userSnap = await getDoc(userRef);
-      if (!userSnap.exists()) return;
-
-      const userData = userSnap.data();
-      const newCoins = userData.coins - 50;
-      const updatedFeatures = userData.unlocked_features || [];
-      updatedFeatures[0] = 1;
-
-      await updateDoc(userRef, {
-        coins: newCoins,
-        unlocked_features: updatedFeatures,
-      });
-
-      alert("🎉 Game Unlocked!");
-      window.location.href = "/pages/VR-GAMES/vrmenu.html";
-    };
-
-    window.closePopup = function () {
-      document.getElementById("confirmationPopup").style.display = "none";
-    };
-  </script>
-
   <style>
     body {
       background: linear-gradient(to bottom, #fffdf4, #fceee3);
@@ -214,7 +135,7 @@
     <div class="container">
       <div class="reward-header">
         <h1 class="display-4">Reward Center!</h1>
-        <div id="coinCount">🪙 0 Coins</div>
+        <div id="coinCount">0 Coins</div>
       </div>
       <p class="lead">You've earned some points! Choose what you'd like to do:</p>
 
@@ -259,5 +180,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/pages/scripts/include.js"></script>
+  <script type="module" src="/pages/scripts/reward.js"></script>
+
 </body>
 </html>
