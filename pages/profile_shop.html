@@ -8,22 +8,29 @@
   <link rel="stylesheet" href="../pages/styles/style.css">
   <link rel="stylesheet" href="../pages/styles/mathQuest.css">
   <link rel="stylesheet" href="../pages/styles/games/shop.css">
-
 </head>
 <body>
-
   <!-- ✅ HEADER -->
   <div id="header"></div>
 
   <!-- 🧸 SHOP CONTENT -->
-  <div class="header-content">
-    <h1>🧸 Choose Your Profile Picture</h1>
-    <div id="coinCount">🪙 0 Coins</div>
-  </div>
+  <main>
+    <div class="header-content">
+      <h1 class="animated-text">🧸 Choose Your Profile Picture</h1>
+      <div id="coinCount" class="coin-display">🪙 0 Coins</div>
+    </div>
 
-  <div class="grid" id="pictureGrid">
-    <!-- Cards will be injected here -->
-  </div>
+    <div class="carousel-container">
+      <div class="carousel-track" id="pictureCarousel">
+        <!-- Pictures will be injected here -->
+      </div>
+      <div class="carousel-controls">
+        <button id="prevBtn" class="carousel-btn">Previous</button>
+        <button id="buyBtn" class="carousel-btn buy-btn">Buy for 20 🪙</button>
+        <button id="nextBtn" class="carousel-btn">Next</button>
+      </div>
+    </div>
+  </main>
 
   <!-- ✅ FOOTER -->
   <div id="footer"></div>
@@ -43,6 +50,7 @@
     let userData, userRef, uid;
     let userCoins = 0;
     let owned = [];
+    let currentIndex = 0;
 
     async function initShop() {
       auth.onAuthStateChanged(async user => {
@@ -57,42 +65,74 @@
         owned = userData.profile_pictures || Array(animalPics.length).fill(0);
 
         document.getElementById("coinCount").textContent = `🪙 ${userCoins} Coins`;
-        renderGrid();
+        renderCarousel();
+
+        // Add event listeners for navigation and buy buttons
+        document.getElementById("prevBtn").addEventListener("click", () => {
+          currentIndex = (currentIndex - 1 + animalPics.length) % animalPics.length;
+          renderCarousel();
+        });
+
+        document.getElementById("nextBtn").addEventListener("click", () => {
+          currentIndex = (currentIndex + 1) % animalPics.length;
+          renderCarousel();
+        });
+
+        document.getElementById("buyBtn").addEventListener("click", () => {
+          buyPicture(currentIndex);
+        });
       });
     }
 
-    function renderGrid() {
-      const grid = document.getElementById("pictureGrid");
-      grid.innerHTML = "";
+    function renderCarousel() {
+      const track = document.getElementById("pictureCarousel");
+      track.innerHTML = "";
 
+      // Update Buy button text based on ownership
+      const buyBtn = document.getElementById("buyBtn");
+      buyBtn.textContent = owned[currentIndex] ? "✅ Owned" : "Buy for 20 🪙";
+      buyBtn.disabled = owned[currentIndex];
+
+      // Create cards for all pictures
       animalPics.forEach((pic, i) => {
         const card = document.createElement("div");
-        card.className = "picture-card" + (owned[i] ? " owned" : "");
+        card.className = "picture-card" + (i === currentIndex ? " active" : "") + (owned[i] ? " owned" : "");
+
+        // Calculate distance from current index and set opacity
+        const distance = Math.min(
+          Math.abs(i - currentIndex),
+          Math.abs(i - currentIndex + animalPics.length),
+          Math.abs(i - currentIndex - animalPics.length)
+        );
+        const opacity = i === currentIndex ? 1 : Math.max(0.2, 1 - 0.2 * distance);
+        card.style.opacity = opacity;
 
         const img = document.createElement("img");
         img.src = `/pages/assets/animals/${pic}`;
         img.alt = displayNames[i];
+        img.className = "bounce";
 
         const title = document.createElement("div");
         title.textContent = displayNames[i].charAt(0).toUpperCase() + displayNames[i].slice(1);
 
+        const status = document.createElement("div");
+        status.innerHTML = owned[i] ? "✅ Owned" : "20 🪙";
+        status.className = "price-status";
+
         card.appendChild(img);
         card.appendChild(title);
+        card.appendChild(status);
 
-        if (owned[i]) {
-          const ownedMsg = document.createElement("div");
-          ownedMsg.innerHTML = "✅ Owned";
-          card.appendChild(ownedMsg);
-        } else {
-          const btn = document.createElement("button");
-          btn.textContent = "Buy for 20 🪙";
-          btn.className = "btn btn-sm btn-primary buy-btn";
-          btn.onclick = () => buyPicture(i);
-          card.appendChild(btn);
-        }
-
-        grid.appendChild(card);
+        track.appendChild(card);
       });
+
+      // Adjust the transform to center the active card
+      const cardWidth = 400;
+      const activeCardWidth = 500;
+      const gap = 40;
+      const offset = -currentIndex * (cardWidth + gap);
+      const activeCardAdjustment = (activeCardWidth - cardWidth) / 2;
+      track.style.transform = `translateX(calc(50% - ${activeCardWidth / 2}px + ${offset}px + ${activeCardAdjustment}px))`;
     }
 
     async function buyPicture(index) {
@@ -108,7 +148,7 @@
       });
 
       document.getElementById("coinCount").textContent = `🪙 ${userCoins} Coins`;
-      renderGrid();
+      renderCarousel();
       alert("🎉 Picture unlocked!");
     }
 
