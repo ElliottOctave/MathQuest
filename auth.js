@@ -60,7 +60,7 @@ export async function handleRegister(event) {
       difficulty_game12: 1,
       unlocked_features:[0],
       profile_pictures: [0,0,0,0,0,0,0,0,0,0,0,0],
-      current_profile_picture: "default_profile_picture.png"
+      current_profile_picture: "default_profile_pic.png"
     });
 
     alert('Registration successful! You can now log in.');
