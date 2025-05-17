@@ -55,6 +55,15 @@ function renderCarousel() {
 
   track.innerHTML = "";
 
+  const isMobile = window.innerWidth <= 768;
+  const vw = window.innerWidth;
+
+  // Responsive breedte-instellingen
+  const cardWidth = isMobile ? vw * 0.9 : 400;
+  const activeCardWidth = isMobile ? vw * 0.9 : 500;
+  const gap = isMobile ? 0 : 40;
+
+  // Carousel cards renderen
   animalPics.forEach((pic, i) => {
     const card = document.createElement("div");
     card.className = "picture-card" + (i === currentIndex ? " active" : "") + (owned[i] ? " owned" : "");
@@ -116,13 +125,12 @@ function renderCarousel() {
     track.appendChild(card);
   });
 
-  const cardWidth = 400;
-  const activeCardWidth = 500;
-  const gap = 40;
+  // Dynamische stapgrootte en positionering
   const offset = -currentIndex * (cardWidth + gap);
   const activeCardAdjustment = (activeCardWidth - cardWidth) / 2;
   const totalOffset = offset + activeCardAdjustment;
 
+  // Correcte translateX op basis van schermformaat
   track.style.transform = `translateX(calc(50% - ${activeCardWidth / 2}px + ${totalOffset}px))`;
 
   if (buyBtn) {
