@@ -2,6 +2,7 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.m
 
 let raycaster, tempMatrix;
 
+// Handle object grabbing on controller press
 function onSelectStart(event) {
   const controller = event.target;
   const { apples, grabbedApple, fallingApples } = event.data;
@@ -32,6 +33,7 @@ function onSelectStart(event) {
   }
 }
 
+// Handle drop or interaction on controller release
 function onSelectEnd(event) {
   const controller = event.target;
   const {
@@ -54,10 +56,8 @@ function onSelectEnd(event) {
     droppedApple = true;
   }
 
-  // 👇 Skip button check if we just dropped an apple this frame
   if (droppedApple) return;
 
-  // 🎯 Check for button hits
   tempMatrix.identity().extractRotation(controller.matrixWorld);
   raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
   raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
@@ -68,13 +68,12 @@ function onSelectEnd(event) {
   for (const hit of buttonHits) {
     let obj = hit.object;
   
-    // Traverse up to find parent with .onClick
     while (obj && !obj.userData.onClick && obj.parent) {
       obj = obj.parent;
     }
   
     if (obj && obj.userData.onClick) {
-      console.log('✅ Executing button click callback on:', obj);
+      console.log('Executing button click callback on:', obj);
       obj.userData.onClick();
       return;
     }
@@ -83,6 +82,7 @@ function onSelectEnd(event) {
 }
 
 
+// Setup XR controller and attach interaction events
 function setupControllers(scene, camera, renderer, gameState) {
   raycaster = new THREE.Raycaster();
   tempMatrix = new THREE.Matrix4();
@@ -92,7 +92,6 @@ function setupControllers(scene, camera, renderer, gameState) {
   gameState.raycaster = raycaster;
 
 
-  // Use a ref-like object so `grabbedApple` is mutable
   if (!gameState.grabbedApple) gameState.grabbedApple = { current: null };
 
   controller.addEventListener('selectstart', e =>

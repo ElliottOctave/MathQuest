@@ -12,11 +12,12 @@ function checkAnswer(gameState) {
   }
 }
 
+// Update apple counter texture
 function updateCounterDisplay(gameState) {
   const { texture, ctx, canvas } = gameState.appleCounter;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = '#114477'; // same blue as equation
+  ctx.fillStyle = '#114477'; 
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   ctx.fillStyle = '#FFD700';
@@ -29,9 +30,5 @@ function updateCounterDisplay(gameState) {
   gameState.appleCounter.panel.material.map = texture;
   gameState.appleCounter.panel.material.needsUpdate = true;
 }
-
-
-
-
 
 export { checkAnswer, updateCounterDisplay };
