@@ -38,7 +38,7 @@ window.unlockVRGame = async function (event) {
   event.preventDefault();
   if (!currentUser) return alert("Please log in.");
   if (featureUnlocked) {
-    window.location.href = "/pages/VR-GAMES/vrmenu.html";
+    window.location.href = "/AR/VRindex.html";
     return;
   }
 
