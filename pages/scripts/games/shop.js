@@ -157,8 +157,24 @@ async function equipPicture(index) {
 
   currentProfilePicture = newPic;
   renderCarousel();
-  alert("🧢 Profile picture equipped!");
+  updateNavbar(newPic);
 }
+
+function updateNavbar(profilePictureName) {
+  const imgElement = document.querySelector("#userDropdown img");
+  if (!imgElement) {
+    console.warn("Navbar profile image not found.");
+    return;
+  }
+
+  const isDefault = profilePictureName === "default_profile_pic.png";
+  const profilePicturePath = isDefault
+    ? `assets/${profilePictureName}`
+    : `assets/animals/${profilePictureName}`;
+
+  imgElement.src = profilePicturePath;
+}
+
 
 async function removePicture() {
   await updateDoc(userRef, {
