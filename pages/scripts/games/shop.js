@@ -4,7 +4,7 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 
 const animalPics = [
   "bear.webp", "cooper.png", "dot.png", "fox.png", "lemur.webp",
-  "monkey.png", "professor.png", "rabbit.webp", "timmy.webp", "zuri.png", "squirrel.webp"
+  "monkey.png", "professor.png", "rabbit.webp", "timmy.webp", "zuri.png", "squirrel.webp", "bob.png"
 ];
 
 const displayNames = animalPics.map(name => name.split(".")[0]);

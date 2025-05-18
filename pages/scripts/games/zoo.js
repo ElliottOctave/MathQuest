@@ -12,7 +12,10 @@ const animals = [
   { name: 'cooper', img: 'cooper.png', price: 10, displayName: 'Captain Cooper' },
   { name: 'lemur', img: 'lemur.webp', price: 10, displayName: 'Leo the Lemur' },
   { name: 'timmy', img: 'timmy.webp', price: 10, displayName: 'Timmy the Turtle' },
-  { name: 'dot', img: 'dot.png', price: 10, displayName: 'Detective Dog' }
+  { name: 'dot', img: 'dot.png', price: 10, displayName: 'Detective Dot' },
+  { name: 'Suzie', img: 'squirrel.webp', price: 10, displayName: 'Suzie the Squirrel' },
+  { name: 'bob', img: 'bob.png', price: 10, displayName: 'Bob the Beaver' },
+  { name: 'milo', img: 'monkey.png', price: 10, displayName: 'Milo the Monkey' }
 ];
 
 const shopEl = document.getElementById('shop');

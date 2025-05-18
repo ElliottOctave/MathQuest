@@ -11,9 +11,9 @@ const gameConfig = {
   game7: { name: "Length Challenge", link: "games/lengthchallenge.html", section: "measurement" },
   game8: { name: "Tell the Time", link: "games/telltime.html", section: "measurement" },
   game9: { name: "Data Detective", link: "games/data_detective.html", section: "measurement" },
-  game10: { name: "Shape Sorter", link: "games/shape_sorter", section: "geometry" },
-  game11: { name: "Build a Shape", link: "#", section: "geometry" },
-  game12: { name: "Fractions & Pieces", link: "#", section: "geometry" },
+  game10: { name: "Shape Sorter", link: "games/shape_sorter.html", section: "geometry" },
+  game11: { name: "Build a Shape", link: "games/buildshape.html", section: "geometry" },
+  game12: { name: "Fractions & Pieces", link: "games/fractions.html", section: "geometry" },
 };
 
 const usedMessages = {

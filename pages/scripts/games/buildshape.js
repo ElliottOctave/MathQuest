@@ -1,0 +1,113 @@
+let difficulty = 1;
+let progress = 0;
+const synth = window.speechSynthesis;
+
+const shapesByDifficulty = {
+  1: ["square", "circle", "triangle"],
+  2: ["square", "circle", "triangle", "rectangle", "hexagon"],
+  3: ["square", "rotated-square", "rectangle", "oval", "circle"]
+};
+
+window.onload = () => changeDifficulty();
+
+function changeDifficulty() {
+  difficulty = parseInt(document.getElementById("difficultySelect").value);
+  restartGame();
+}
+
+function restartGame() {
+  progress = 0;
+  document.getElementById("progressBar").style.width = "0%";
+  generateShapes();
+}
+
+function generateShapes() {
+  document.getElementById("feedback").innerHTML = "";
+  const shapeContainer = document.getElementById("shapeContainer");
+  shapeContainer.innerHTML = "";
+
+  const pool = shapesByDifficulty[difficulty];
+  const baseShape = pool[Math.floor(Math.random() * pool.length)];
+  let oddShape;
+  do {
+    oddShape = pool[Math.floor(Math.random() * pool.length)];
+  } while (oddShape === baseShape);
+
+  // Difficulty scaling: more shapes
+  const shapeCount = difficulty === 1 ? 3 : difficulty === 2 ? 4 : 6;
+  const oddIndex = Math.floor(Math.random() * shapeCount);
+
+  for (let i = 0; i < shapeCount; i++) {
+    const shapeType = i === oddIndex ? oddShape : baseShape;
+    const shape = document.createElement("div");
+    shape.className = `shape ${shapeType}`;
+    shape.style.backgroundColor = getRandomColor(shapeType); // to avoid coloring triangles
+    if (difficulty === 3 && shapeType !== "triangle") {
+      shape.style.transform = `rotate(${Math.floor(Math.random() * 360)}deg)`;
+    }
+    shape.onclick = () => handleAnswer(i === oddIndex);
+    shapeContainer.appendChild(shape);
+  }
+}
+
+function handleAnswer(isCorrect) {
+  const feedback = document.getElementById("feedback");
+  if (isCorrect) {
+    feedback.innerHTML = `<span class="correct">✅ Great! That's the odd one out.</span>`;
+    progress += 20;
+    document.getElementById("progressBar").style.width = `${progress}%`;
+    if (progress >= 100) {
+      setTimeout(() => {
+        const win = new bootstrap.Modal(document.getElementById("winModal"));
+        win.show();
+        launchConfetti();
+      }, 500);
+    } else {
+      setTimeout(generateShapes, 1500);
+    }
+  } else {
+    feedback.innerHTML = `<span class="incorrect">❌ Try again!</span>`;
+  }
+}
+
+function readStory() {
+  if (synth.speaking) synth.cancel();
+  const text = document.getElementById("storyText").textContent;
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "en-US";
+  utterance.rate = 0.9;
+  utterance.pitch = 1;
+  synth.speak(utterance);
+}
+
+function launchConfetti() {
+  const duration = 2000;
+  const end = Date.now() + duration;
+
+  (function frame() {
+    confetti({
+      particleCount: 10,
+      angle: 60,
+      spread: 55,
+      origin: {x: 0},
+      colors: ['#f39c12', '#6bcB77', '#3498db']
+    });
+    confetti({
+      particleCount: 10,
+      angle: 120,
+      spread: 55,
+      origin: {x: 1},
+      colors: ['#f39c12', '#6bcB77', '#3498db']
+    });
+
+    if (Date.now() < end) {
+      requestAnimationFrame(frame);
+    }
+  })();
+}
+
+function getRandomColor(shapeType) {
+  if (shapeType === "triangle") return "transparent"; // handled with borders
+  const colors = ["#3498db", "#e74c3c", "#f1c40f", "#8e44ad", "#1abc9c"];
+  return colors[Math.floor(Math.random() * colors.length)];
+}
