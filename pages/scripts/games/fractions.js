@@ -1,5 +1,8 @@
+import { setupGame, updatePerformance } from '../template/gameTemplate.js';
 let progress = 0;
 let difficulty = 1;
+let mistakes = 0;
+let startTime = Date.now();
 const synth = window.speechSynthesis;
 
 const allPizzas = [
@@ -12,20 +15,31 @@ const allPizzas = [
   { image: "pizza_full.png", label: "Four quarters", difficulty: [3] }
 ];
 
-window.onload = () => changeDifficulty();
+// Initialize the game with the necessary functions
+const game = setupGame({
+  generateQuestionFn: generateQuestion,
+  checkAnswerFn: checkAnswer,
+  getFeedbackMessageFn: getFeedbackMessage,
+  gameId: "game12", // Unique game ID for tracking
+});
 
-function changeDifficulty() {
-  difficulty = parseInt(document.getElementById("difficultySelect").value);
-  restartGame();
-}
+window.readStory = game.readStory;
+window.changeDifficulty = game.changeDifficulty;
 
-function restartGame() {
+// Expose restartGame to reset progress and call the restart function from the game template
+window.restartGame = () => {
+  mistakes = 0;
   progress = 0;
+  startTime = Date.now();
   document.getElementById("progressBar").style.width = "0%";
-  generateQuestion();
-}
+  game.restartGame(); // This calls the restart function from the game template
+};
 
-function generateQuestion() {
+window.onload = () => restartGame();
+
+function generateQuestion(diff) {
+  difficulty = diff || 1;
+  console.log("Generating pizza question for difficulty:", diff);
   document.getElementById("feedback").innerHTML = "";
   const pizzaOptions = allPizzas.filter(p => p.difficulty.includes(difficulty));
   const correctPizza = pizzaOptions[Math.floor(Math.random() * pizzaOptions.length)];
@@ -62,14 +76,16 @@ function checkAnswer(selected, correct) {
 
     if (progress >= 100) {
       setTimeout(() => {
+        updatePerformance("game12", mistakes, startTime);
         const win = new bootstrap.Modal(document.getElementById("winModal"));
         win.show();
         launchConfetti();
       }, 500);
     } else {
-      setTimeout(generateQuestion, 1200);
+      setTimeout(() => generateQuestion(difficulty), 1200);
     }
   } else {
+    mistakes ++;
     feedback.innerHTML = `<span class="incorrect">❌ Try again!</span>`;
   }
 }
@@ -83,14 +99,10 @@ function shuffleArray(arr) {
   return copy;
 }
 
-function readStory() {
-  if (synth.speaking) synth.cancel();
-  const text = document.getElementById("storyText").textContent;
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "en-US";
-  utterance.rate = 0.9;
-  utterance.pitch = 1;
-  synth.speak(utterance);
+function getFeedbackMessage(correct, correctAnswer) {
+  return correct
+    ? `✅ Great job! You selected the correct pizza portion.`
+    : `❌ Oops! Try again. The correct answer is ${correctAnswer}.`;
 }
 
 function launchConfetti() {
