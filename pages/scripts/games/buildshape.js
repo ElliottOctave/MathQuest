@@ -1,5 +1,8 @@
+import { setupGame, updatePerformance } from '../template/gameTemplate.js';
 let difficulty = 1;
 let progress = 0;
+let mistakes = 0;
+let startTime = Date.now();
 const synth = window.speechSynthesis;
 
 const shapesByDifficulty = {
@@ -8,20 +11,28 @@ const shapesByDifficulty = {
   3: ["square", "rotated-square", "rectangle", "oval", "circle"]
 };
 
-window.onload = () => changeDifficulty();
+const game = setupGame({
+  generateQuestionFn: generateShapes,
+  gameId: "game11", // Unique game ID for tracking
+});
 
-function changeDifficulty() {
-  difficulty = parseInt(document.getElementById("difficultySelect").value);
-  restartGame();
-}
+window.readStory = game.readStory;
+window.changeDifficulty = game.changeDifficulty;
 
-function restartGame() {
+// Expose restartGame to reset progress and call the restart function from the game template
+window.restartGame = () => {
+  mistakes = 0;
+  startTime = Date.now();
   progress = 0;
   document.getElementById("progressBar").style.width = "0%";
-  generateShapes();
-}
+  game.restartGame(); // This calls the restart function from the game template
+};
 
-function generateShapes() {
+window.onload = () => restartGame();
+
+function generateShapes(diff) {
+  difficulty = diff || 1;
+  console.log("Generating shapes for difficulty:", diff);
   document.getElementById("feedback").innerHTML = "";
   const shapeContainer = document.getElementById("shapeContainer");
   shapeContainer.innerHTML = "";
@@ -58,12 +69,13 @@ function handleAnswer(isCorrect) {
     document.getElementById("progressBar").style.width = `${progress}%`;
     if (progress >= 100) {
       setTimeout(() => {
+        updatePerformance("game11", mistakes, startTime);
         const win = new bootstrap.Modal(document.getElementById("winModal"));
         win.show();
         launchConfetti();
       }, 500);
     } else {
-      setTimeout(generateShapes, 1500);
+      setTimeout(generateShapes(difficulty), 1500);
     }
   } else {
     feedback.innerHTML = `<span class="incorrect">❌ Try again!</span>`;
