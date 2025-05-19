@@ -22,16 +22,6 @@
     <button onclick="readStory()" class="sound-btn">🔊</button>
   </div>
 
-  <!-- Difficulty -->
-  <div class="text-center mb-4">
-    <label for="difficultySelect" class="form-label">Choose Difficulty:</label>
-    <select id="difficultySelect" class="form-select w-50 mx-auto" onchange="changeDifficulty()">
-      <option value="1">Easy (2 shapes)</option>
-      <option value="2">Medium (3 shapes)</option>
-      <option value="3">Hard (4 shapes + tricky shapes)</option>
-    </select>
-  </div>
-
   <!-- Shapes Area -->
   <div id="gameArea" class="text-center mb-4">
     <div id="shapesToSort" class="d-flex justify-content-center flex-wrap gap-3 mb-4"></div>
@@ -71,7 +61,7 @@
   <div id="footer"></div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<script src="../scripts/games/shape_sorter.js"></script>
+<script type="module" src="../scripts/games/shape_sorter.js"></script>
 <script src="/pages/scripts/include.js"></script>
 </body>
 </html>

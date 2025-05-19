@@ -1,6 +1,10 @@
+import { setupGame, updatePerformance } from '../template/gameTemplate.js';
+
 let difficulty = 1;
 let progress = 0;
 let totalShapes = 0;
+let mistakes = 0;
+let startTime = Date.now();
 let synth = window.speechSynthesis;
 
 const allShapes = {
@@ -11,21 +15,32 @@ const allShapes = {
   diamond: "🔷"
 };
 
-window.onload = () => changeDifficulty();
+const game = setupGame({
+  generateQuestionFn: generateShapes,
+  checkAnswerFn: checkProgress,
+  getFeedbackMessageFn: getFeedbackMessage,
+  gameId: "game10", // Unique game ID for tracking
+});
 
-function changeDifficulty() {
-  difficulty = parseInt(document.getElementById("difficultySelect").value);
-  restartGame();
-}
+window.readStory = game.readStory;
+window.changeDifficulty = game.changeDifficulty;
 
-function restartGame() {
+// Expose restartGame to reset progress and call the restart function from the game template
+window.restartGame = () => {
+  mistakes = 0;
+  startTime = Date.now();
   progress = 0;
   totalShapes = 0;
   document.getElementById("progressBar").style.width = "0%";
-  generateShapes();
-}
+  game.restartGame();
+};
 
-function generateShapes() {
+window.onload = () => restartGame();
+
+
+function generateShapes(diff) {
+  difficulty = diff || 1;
+  console.log("Generating shapes for difficulty:", diff);
   document.getElementById("feedback").innerHTML = "";
 
   const shapesToSort = document.getElementById("shapesToSort");
@@ -129,6 +144,8 @@ function checkProgress() {
     shapes.forEach(s => {
       if (s.getAttribute("data-shape") === expected) {
         correct++;
+      } else {
+        mistakes++;
       }
     });
   });
@@ -138,6 +155,7 @@ function checkProgress() {
 
   if (correct === totalShapes) {
     setTimeout(() => {
+      updatePerformance("game10", mistakes, startTime);
       const win = new bootstrap.Modal(document.getElementById("winModal"));
       win.show();
       launchConfetti();
@@ -152,14 +170,10 @@ function shuffleArray(arr) {
   }
 }
 
-function readStory() {
-  if (synth.speaking) synth.cancel();
-  const text = document.getElementById("storyText").textContent;
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "en-US";
-  utterance.rate = 0.9;
-  utterance.pitch = 1;
-  synth.speak(utterance);
+function getFeedbackMessage(correct, correctAnswer) {
+  return correct
+    ? `✅ Great job! You sorted all the shapes correctly.`
+    : `❌ Oops! Try again. The correct placement is ${correctAnswer}.`;
 }
 
 function launchConfetti() {

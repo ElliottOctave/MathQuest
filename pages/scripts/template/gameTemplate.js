@@ -78,7 +78,6 @@ export function setupGame({
 
   async function restartGame() {
   console.log("Restarting game...");
-  console.log("Mistakes made:", mistakes);
     if (mistakes >= 3) {
       const helpBtn = document.getElementById("helpButton");
       if (helpBtn) helpBtn.style.display = "block";
