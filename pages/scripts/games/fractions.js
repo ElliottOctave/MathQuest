@@ -1,6 +1,6 @@
-import { setupGame, updatePerformance } from '../template/gameTemplate.js';
+import { setupGame, updatePerformance, getDifficulty} from '../template/gameTemplate.js';
 let progress = 0;
-let difficulty = 1;
+let difficulty;
 let mistakes = 0;
 let startTime = Date.now();
 const synth = window.speechSynthesis;
@@ -37,8 +37,8 @@ window.restartGame = () => {
 
 window.onload = () => restartGame();
 
-function generateQuestion(diff) {
-  difficulty = diff || 1;
+async function generateQuestion() {
+  difficulty = await getDifficulty("game12");
   console.log("Generating pizza question for difficulty:", diff);
   document.getElementById("feedback").innerHTML = "";
   const pizzaOptions = allPizzas.filter(p => p.difficulty.includes(difficulty));
@@ -86,6 +86,7 @@ function checkAnswer(selected, correct) {
     }
   } else {
     mistakes ++;
+    game.registerMistake();
     feedback.innerHTML = `<span class="incorrect">❌ Try again!</span>`;
   }
 }

@@ -1,6 +1,6 @@
-import { setupGame, updatePerformance } from '../template/gameTemplate.js';
+import { setupGame, updatePerformance, getDifficulty } from '../template/gameTemplate.js';
 
-let difficulty = 1;
+let difficulty;
 let progress = 0;
 let totalShapes = 0;
 let mistakes = 0;
@@ -19,13 +19,12 @@ const game = setupGame({
   generateQuestionFn: generateShapes,
   checkAnswerFn: checkProgress,
   getFeedbackMessageFn: getFeedbackMessage,
-  gameId: "game10", // Unique game ID for tracking
+  gameId: "game10",
 });
 
 window.readStory = game.readStory;
 window.changeDifficulty = game.changeDifficulty;
 
-// Expose restartGame to reset progress and call the restart function from the game template
 window.restartGame = () => {
   mistakes = 0;
   startTime = Date.now();
@@ -37,9 +36,8 @@ window.restartGame = () => {
 
 window.onload = () => restartGame();
 
-
-function generateShapes(diff) {
-  difficulty = diff || 1;
+async function generateShapes(diff) {
+  difficulty = await getDifficulty("game10");
   console.log("Generating shapes for difficulty:", diff);
   document.getElementById("feedback").innerHTML = "";
 
@@ -51,7 +49,6 @@ function generateShapes(diff) {
   const shapeKeys = Object.keys(allShapes).slice(0, difficulty + 2);
   const shapePool = [];
 
-  // Add 3 of each shape
   shapeKeys.forEach(shape => {
     for (let i = 0; i < 3; i++) {
       shapePool.push(shape);
@@ -76,7 +73,6 @@ function generateShapes(diff) {
     dropZones.appendChild(zone);
   });
 
-  // Make shapesToSort area a drop zone too
   shapesToSort.ondragover = e => e.preventDefault();
   shapesToSort.ondrop = e => {
     const shape = e.dataTransfer.getData("shape");
@@ -116,22 +112,39 @@ function handleDrop(e) {
 
   const span = createShapeElement(shape, id);
   if (document.getElementById(id)) {
-    // Already placed
     document.getElementById(id).remove();
   }
 
-  // Get the actual drop-zone even if child was clicked
   let zone = e.target;
   while (zone && !zone.classList.contains("drop-zone")) {
     zone = zone.parentElement;
   }
 
+  const shapesToSort = document.getElementById("shapesToSort");
+
   if (zone) {
-    zone.appendChild(span);
+    const expectedShape = zone.getAttribute("data-target");
+    if (shape !== expectedShape) {
+      mistakes++;
+      game.registerMistake();
+      document.getElementById("feedback").innerHTML = `<span class="incorrect">❌ Oops! That doesn't belong in the ${expectedShape.toUpperCase()} zone.</span>`;
+      
+      if (!document.getElementById(id)) {
+        shapesToSort.appendChild(span);
+      }
+
+      setTimeout(() => {
+        document.getElementById("feedback").innerHTML = "";
+      }, 2500);
+    } else {
+      document.getElementById("feedback").innerHTML = `<span class="correct">✅ Great! That belongs in the ${expectedShape.toUpperCase()} zone!</span>`;
+      zone.appendChild(span);
+    }
   }
 
   checkProgress();
 }
+
 
 function checkProgress() {
   const dropZones = document.querySelectorAll(".drop-zone");
@@ -144,8 +157,6 @@ function checkProgress() {
     shapes.forEach(s => {
       if (s.getAttribute("data-shape") === expected) {
         correct++;
-      } else {
-        mistakes++;
       }
     });
   });
@@ -185,14 +196,14 @@ function launchConfetti() {
       particleCount: 10,
       angle: 60,
       spread: 55,
-      origin: {x: 0},
+      origin: { x: 0 },
       colors: ['#e67e22', '#f1c40f', '#3498db']
     });
     confetti({
       particleCount: 10,
       angle: 120,
       spread: 55,
-      origin: {x: 1},
+      origin: { x: 1 },
       colors: ['#e67e22', '#f1c40f', '#3498db']
     });
 

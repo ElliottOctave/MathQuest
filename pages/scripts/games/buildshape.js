@@ -1,5 +1,5 @@
-import { setupGame, updatePerformance } from '../template/gameTemplate.js';
-let difficulty = 1;
+import { setupGame, updatePerformance, getDifficulty } from '../template/gameTemplate.js';
+let difficulty;
 let progress = 0;
 let mistakes = 0;
 let startTime = Date.now();
@@ -30,8 +30,8 @@ window.restartGame = () => {
 
 window.onload = () => restartGame();
 
-function generateShapes(diff) {
-  difficulty = diff || 1;
+async function generateShapes() {
+  difficulty = await getDifficulty("game11");
   console.log("Generating shapes for difficulty:", diff);
   document.getElementById("feedback").innerHTML = "";
   const shapeContainer = document.getElementById("shapeContainer");
@@ -78,6 +78,8 @@ function handleAnswer(isCorrect) {
       setTimeout(generateShapes(difficulty), 1500);
     }
   } else {
+    mistakes++;
+    game.registerMistake();
     feedback.innerHTML = `<span class="incorrect">❌ Try again!</span>`;
   }
 }
