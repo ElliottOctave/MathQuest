@@ -39,7 +39,6 @@ window.onload = () => restartGame();
 
 async function generateQuestion() {
   difficulty = await getDifficulty("game12");
-  console.log("Generating pizza question for difficulty:", diff);
   document.getElementById("feedback").innerHTML = "";
   const pizzaOptions = allPizzas.filter(p => p.difficulty.includes(difficulty));
   const correctPizza = pizzaOptions[Math.floor(Math.random() * pizzaOptions.length)];

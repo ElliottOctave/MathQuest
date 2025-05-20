@@ -62,10 +62,16 @@ async function generateShapes() {
 
 function handleAnswer(isCorrect) {
   const feedback = document.getElementById("feedback");
+
   if (isCorrect) {
     feedback.innerHTML = `<span class="correct">✅ Great! That's the odd one out.</span>`;
     progress += 20;
     document.getElementById("progressBar").style.width = `${progress}%`;
+
+    setTimeout(() => {
+      feedback.innerHTML = ""; // Verwijder feedback na delay
+    }, 2500);
+
     if (progress >= 100) {
       setTimeout(() => {
         updatePerformance("game11", mistakes, startTime);
@@ -74,12 +80,16 @@ function handleAnswer(isCorrect) {
         launchConfetti();
       }, 500);
     } else {
-      setTimeout(generateShapes(difficulty), 1500);
+      setTimeout(() => generateShapes(difficulty), 1500);
     }
   } else {
     mistakes++;
     game.registerMistake();
     feedback.innerHTML = `<span class="incorrect">❌ Try again!</span>`;
+
+    setTimeout(() => {
+      feedback.innerHTML = ""; // Verwijder foutboodschap na delay
+    }, 2500);
   }
 }
 
