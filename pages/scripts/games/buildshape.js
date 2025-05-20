@@ -32,7 +32,6 @@ window.onload = () => restartGame();
 
 async function generateShapes() {
   difficulty = await getDifficulty("game11");
-  console.log("Generating shapes for difficulty:", diff);
   document.getElementById("feedback").innerHTML = "";
   const shapeContainer = document.getElementById("shapeContainer");
   shapeContainer.innerHTML = "";
