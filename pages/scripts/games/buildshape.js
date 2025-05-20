@@ -134,3 +134,81 @@ function getRandomColor(shapeType) {
   const colors = ["#3498db", "#e74c3c", "#f1c40f", "#8e44ad", "#1abc9c"];
   return colors[Math.floor(Math.random() * colors.length)];
 }
+
+window.showHelp = function () {
+  const { html, oddName, baseName, baseCorners, oddCorners } = generateShapeExample();
+
+  const tipBox = document.createElement("div");
+  tipBox.innerHTML = `
+    <div style="
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background: #fff8dc;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      max-width: 460px;
+      z-index: 1001;
+      font-family: sans-serif;
+    ">
+      <h5><strong>Tip:</strong></h5>
+      <p>Let’s try a little example together!</p>
+      <p>Can you spot the shape that doesn’t belong?</p>
+      <div style="display: flex; justify-content: center; gap: 12px; margin: 16px 0;">
+        ${html}
+      </div>
+      <p><strong>Hint:</strong> Start by counting the corners on each shape.</p>
+      <p>Most shapes here have <strong>${baseCorners} corners</strong>, but one shape has <strong>${oddCorners} corners</strong>.</p>
+      <p>That means the <strong>${oddName}</strong> is different from the <strong>${baseName}s</strong>.</p>
+      <button onclick="this.parentElement.remove()" class="btn btn-warning mt-3">Close</button>
+    </div>
+  `;
+  document.body.appendChild(tipBox);
+};
+
+function generateShapeExample() {
+  const shapes = {
+    square: { corners: 4, className: "square" },
+    circle: { corners: 0, className: "circle" },
+    triangle: { corners: 3, className: "triangle" },
+    rectangle: { corners: 4, className: "rectangle" },
+    hexagon: { corners: 6, className: "hexagon" },
+  };
+
+  const keys = Object.keys(shapes);
+  const baseKey = keys[Math.floor(Math.random() * keys.length)];
+  let oddKey;
+  do {
+    oddKey = keys[Math.floor(Math.random() * keys.length)];
+  } while (oddKey === baseKey || shapes[oddKey].corners === shapes[baseKey].corners);
+
+  const shapeList = [baseKey, baseKey, oddKey];
+  shuffleArray(shapeList);
+
+  const html = shapeList
+    .map(type => {
+      return `<div class="shape ${shapes[type].className}" style="width: 60px; height: 60px; background-color: #3498db;"></div>`;
+    })
+    .join("");
+
+  return {
+    html,
+    oddName: capitalize(oddKey),
+    baseName: capitalize(baseKey),
+    oddCorners: shapes[oddKey].corners,
+    baseCorners: shapes[baseKey].corners
+  };
+}
+
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function capitalize(word) {
+  return word.charAt(0).toUpperCase() + word.slice(1);
+}
