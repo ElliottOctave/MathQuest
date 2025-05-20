@@ -40,10 +40,10 @@ if (userNav) {
       const username = userData.username || user.email;
       const profilePicture = userData.current_profile_picture || "default_profile_pic.png";
 
-      // Bepaal juiste pad op basis van of het de default is of een dier
       const profilePicturePath = profilePicture === "default_profile_pic.png"
-        ? `assets/${profilePicture}`
-        : `assets/animals/${profilePicture}`;
+        ? `/pages/assets/${profilePicture}`
+        : `/pages/assets/animals/${profilePicture}`;
+
 
     userNav.innerHTML = `
       <li class="nav-item d-flex align-items-center">
