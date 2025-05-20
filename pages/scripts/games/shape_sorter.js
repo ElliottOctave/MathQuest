@@ -212,3 +212,63 @@ function launchConfetti() {
     }
   })();
 }
+
+window.showHelp = async function () {
+  const helpBox = document.createElement("div");
+  helpBox.innerHTML = "";
+
+  const difficultyLevel = await getDifficulty("game10");
+
+  const shapeDescriptions = {
+    square: "It has 4 equal sides and 4 corners. This is called a <strong>square</strong>.",
+    circle: "It's round and has no corners. This is called a <strong>circle</strong>.",
+    triangle: "It has 3 straight sides and 3 corners. This is called a <strong>triangle</strong>.",
+    star: "It has pointy arms. This is called a <strong>star</strong>.",
+    diamond: "It looks like a tilted square. This is called a <strong>diamond</strong>."
+  };
+
+  const shapeEmojis = {
+    square: "🟦",
+    circle: "🔵",
+    triangle: "🔺",
+    star: "⭐️",
+    diamond: "🔷"
+  };
+
+  const shapeKeys = Object.keys(shapeDescriptions).slice(0, difficultyLevel + 2);
+
+  const tipsList = shapeKeys.map(shape => {
+    return `
+      <div style="margin-bottom: 10px;">
+        <span style="font-size: 1.4rem;">${shapeEmojis[shape]}</span>
+        <span style="margin-left: 10px;">${shapeDescriptions[shape]}</span>
+      </div>
+    `;
+  }).join("");
+
+  helpBox.innerHTML = `
+    <div style="
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      background: #fff9c4;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      max-width: 420px;
+      max-height: 75vh;
+      overflow-y: auto;
+      z-index: 1001;
+      font-family: 'Comic Sans MS', sans-serif;
+    ">
+      <h5><strong>Tip:</strong></h5>
+      <p>Let’s be smart shape detectives!</p>
+      <p>Each shape has a name and a special look. Read the clues and try to match the shapes to the right basket.</p>
+      <hr>
+      ${tipsList}
+      <button onclick="this.parentElement.remove()" class="btn btn-warning mt-3">Close</button>
+    </div>
+  `;
+
+  document.body.appendChild(helpBox);
+};

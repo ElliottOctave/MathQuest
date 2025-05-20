@@ -9,59 +9,69 @@
   <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="header"></div>
-<div class="container py-5">
-  <!-- Story -->
-  <div class="text-center p-4 mb-4 rounded story-block">
-    <img src="../assets/shape_sorter/squirrel.webp" alt="Suzie" width="100">
-    <h1 class="game-title">🔺 Suzie’s Shape Sorter 🟦</h1>
-    <p id="storyText" class="story-text">
-      Suzie the Squirrel loves collecting shapes for her treehouse decorations!<br>
-      Help her sort the shapes into the right baskets!
-    </p>
-    <button onclick="readStory()" class="sound-btn">🔊</button>
-  </div>
+  <div id="header"></div>
 
-  <!-- Shapes Area -->
-  <div id="gameArea" class="text-center mb-4">
-    <div id="shapesToSort" class="d-flex justify-content-center flex-wrap gap-3 mb-4"></div>
-    <div id="dropZones" class="d-flex justify-content-center flex-wrap gap-5"></div>
-  </div>
-
-  <!-- Feedback -->
-  <div id="feedback" class="text-center mt-3"></div>
-
-  <!-- Progress -->
-  <div class="mt-5 text-center">
-    <p>Help Suzie decorate her treehouse!</p>
-    <div class="d-flex align-items-center justify-content-center gap-2">
-      <img src="../assets/shape_sorter/squirrel.webp" alt="Suzie" width="60">
-      <div class="progress w-50">
-        <div class="progress-bar bg-success" id="progressBar" style="width: 0%"></div>
-      </div>
+  <div class="container py-5">
+    <!-- Story -->
+    <div class="text-center p-4 mb-4 rounded story-block">
+      <img src="../assets/shape_sorter/squirrel.webp" alt="Suzie" width="100">
+      <h1 class="game-title">🔺 Suzie’s Shape Sorter 🟦</h1>
+      <p id="storyText" class="story-text">
+        Suzie the Squirrel loves collecting shapes for her treehouse decorations!<br>
+        Help her sort the shapes into the right baskets!
+      </p>
+      <button onclick="readStory()" class="sound-btn">🔊</button>
     </div>
-  </div>
 
-  <!-- Win Modal -->
-  <div class="modal fade" id="winModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content text-center p-4">
-        <div class="modal-body">
-          <img src="../assets/shape_sorter/squirrel.webp" width="100" class="mb-3">
-          <h2 class="text-success">🎉 Great job!</h2>
-          <p class="lead">You helped Suzie sort all her shapes!</p>
-          <button class="btn btn-success" onclick="restartGame()" data-bs-dismiss="modal">Play Again</button>
+    <!-- Shapes Area -->
+    <div id="gameArea" class="text-center mb-4">
+      <div id="shapesToSort" class="d-flex justify-content-center flex-wrap gap-3 mb-4"></div>
+      <div id="dropZones" class="d-flex justify-content-center flex-wrap gap-5"></div>
+    </div>
+
+    <!-- Feedback -->
+    <div id="feedback" class="text-center mt-3"></div>
+
+    <!-- Progress -->
+    <div class="mt-5 text-center">
+      <p>Help Suzie decorate her treehouse!</p>
+      <div class="d-flex align-items-center justify-content-center gap-2">
+        <img src="../assets/shape_sorter/squirrel.webp" alt="Suzie" width="60">
+        <div class="progress w-50">
+          <div class="progress-bar bg-success" id="progressBar" style="width: 0%"></div>
         </div>
       </div>
     </div>
+
+    <!-- Win Modal -->
+    <div class="modal fade" id="winModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center p-4">
+          <div class="modal-body">
+            <img src="../assets/shape_sorter/squirrel.webp" width="100" class="mb-3">
+            <h2 class="text-success">🎉 Great job!</h2>
+            <p class="lead">You helped Suzie sort all her shapes!</p>
+            <button class="btn btn-success" onclick="restartGame()" data-bs-dismiss="modal">Play Again</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Help Button (initially hidden, shown after 3+ mistakes) -->
+    <button id="helpButton" class="btn btn-warning help-btn"
+      style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 1000;"
+      onclick="showHelp()">
+      ❓ Tip!
+    </button>
+
   </div>
 
-</div>
   <!-- Footer will be loaded dynamically -->
   <div id="footer"></div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<script type="module" src="../scripts/games/shape_sorter.js"></script>
-<script src="/pages/scripts/include.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script type="module" src="../scripts/games/shape_sorter.js"></script>
+  <script src="/pages/scripts/include.js"></script>
 </body>
 </html>
