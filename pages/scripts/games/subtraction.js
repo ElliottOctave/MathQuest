@@ -57,7 +57,7 @@ function animateMonkey(callback) {
 
   setTimeout(() => {
     if (callback) callback();
-  }, 2000);
+  }, 0);
 }
 
 function checkAnswer(userInput) {
