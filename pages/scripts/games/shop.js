@@ -31,7 +31,6 @@ async function initShop() {
     document.getElementById("coinCount").textContent = `🪙 ${userCoins} Coins`;
     renderCarousel();
 
-    // ✅ Static button listeners
     document.getElementById("prevBtn").addEventListener("click", () => {
       currentIndex = (currentIndex - 1 + animalPics.length) % animalPics.length;
       renderCarousel();

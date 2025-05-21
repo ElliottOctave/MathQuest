@@ -1,6 +1,6 @@
-import { setupGame, updatePerformance } from '../template/gameTemplate.js';
+import { setupGame, updatePerformance, getDifficulty } from '../template/gameTemplate.js';
 
-let difficulty = 1;
+let difficulty;
 let progress = 0;
 let totalShapes = 0;
 let mistakes = 0;
@@ -19,13 +19,12 @@ const game = setupGame({
   generateQuestionFn: generateShapes,
   checkAnswerFn: checkProgress,
   getFeedbackMessageFn: getFeedbackMessage,
-  gameId: "game10", // Unique game ID for tracking
+  gameId: "game10",
 });
 
 window.readStory = game.readStory;
 window.changeDifficulty = game.changeDifficulty;
 
-// Expose restartGame to reset progress and call the restart function from the game template
 window.restartGame = () => {
   mistakes = 0;
   startTime = Date.now();
@@ -37,9 +36,8 @@ window.restartGame = () => {
 
 window.onload = () => restartGame();
 
-
-function generateShapes(diff) {
-  difficulty = diff || 1;
+async function generateShapes(diff) {
+  difficulty = await getDifficulty("game10");
   console.log("Generating shapes for difficulty:", diff);
   document.getElementById("feedback").innerHTML = "";
 
@@ -51,7 +49,6 @@ function generateShapes(diff) {
   const shapeKeys = Object.keys(allShapes).slice(0, difficulty + 2);
   const shapePool = [];
 
-  // Add 3 of each shape
   shapeKeys.forEach(shape => {
     for (let i = 0; i < 3; i++) {
       shapePool.push(shape);
@@ -76,7 +73,6 @@ function generateShapes(diff) {
     dropZones.appendChild(zone);
   });
 
-  // Make shapesToSort area a drop zone too
   shapesToSort.ondragover = e => e.preventDefault();
   shapesToSort.ondrop = e => {
     const shape = e.dataTransfer.getData("shape");
@@ -116,22 +112,39 @@ function handleDrop(e) {
 
   const span = createShapeElement(shape, id);
   if (document.getElementById(id)) {
-    // Already placed
     document.getElementById(id).remove();
   }
 
-  // Get the actual drop-zone even if child was clicked
   let zone = e.target;
   while (zone && !zone.classList.contains("drop-zone")) {
     zone = zone.parentElement;
   }
 
+  const shapesToSort = document.getElementById("shapesToSort");
+
   if (zone) {
-    zone.appendChild(span);
+    const expectedShape = zone.getAttribute("data-target");
+    if (shape !== expectedShape) {
+      mistakes++;
+      game.registerMistake();
+      document.getElementById("feedback").innerHTML = `<span class="incorrect">❌ Oops! That doesn't belong in the ${expectedShape.toUpperCase()} zone.</span>`;
+      
+      if (!document.getElementById(id)) {
+        shapesToSort.appendChild(span);
+      }
+
+      setTimeout(() => {
+        document.getElementById("feedback").innerHTML = "";
+      }, 2500);
+    } else {
+      document.getElementById("feedback").innerHTML = `<span class="correct">✅ Great! That belongs in the ${expectedShape.toUpperCase()} zone!</span>`;
+      zone.appendChild(span);
+    }
   }
 
   checkProgress();
 }
+
 
 function checkProgress() {
   const dropZones = document.querySelectorAll(".drop-zone");
@@ -144,8 +157,6 @@ function checkProgress() {
     shapes.forEach(s => {
       if (s.getAttribute("data-shape") === expected) {
         correct++;
-      } else {
-        mistakes++;
       }
     });
   });
@@ -185,14 +196,14 @@ function launchConfetti() {
       particleCount: 10,
       angle: 60,
       spread: 55,
-      origin: {x: 0},
+      origin: { x: 0 },
       colors: ['#e67e22', '#f1c40f', '#3498db']
     });
     confetti({
       particleCount: 10,
       angle: 120,
       spread: 55,
-      origin: {x: 1},
+      origin: { x: 1 },
       colors: ['#e67e22', '#f1c40f', '#3498db']
     });
 
@@ -201,3 +212,63 @@ function launchConfetti() {
     }
   })();
 }
+
+window.showHelp = async function () {
+  const helpBox = document.createElement("div");
+  helpBox.innerHTML = "";
+
+  const difficultyLevel = await getDifficulty("game10");
+
+  const shapeDescriptions = {
+    square: "It has 4 equal sides and 4 corners. This is called a <strong>square</strong>.",
+    circle: "It's round and has no corners. This is called a <strong>circle</strong>.",
+    triangle: "It has 3 straight sides and 3 corners. This is called a <strong>triangle</strong>.",
+    star: "It has pointy arms. This is called a <strong>star</strong>.",
+    diamond: "It looks like a tilted square. This is called a <strong>diamond</strong>."
+  };
+
+  const shapeEmojis = {
+    square: "🟦",
+    circle: "🔵",
+    triangle: "🔺",
+    star: "⭐️",
+    diamond: "🔷"
+  };
+
+  const shapeKeys = Object.keys(shapeDescriptions).slice(0, difficultyLevel + 2);
+
+  const tipsList = shapeKeys.map(shape => {
+    return `
+      <div style="margin-bottom: 10px;">
+        <span style="font-size: 1.4rem;">${shapeEmojis[shape]}</span>
+        <span style="margin-left: 10px;">${shapeDescriptions[shape]}</span>
+      </div>
+    `;
+  }).join("");
+
+  helpBox.innerHTML = `
+    <div style="
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      background: #fff9c4;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      max-width: 420px;
+      max-height: 75vh;
+      overflow-y: auto;
+      z-index: 1001;
+      font-family: 'Comic Sans MS', sans-serif;
+    ">
+      <h5><strong>Tip:</strong></h5>
+      <p>Let’s be smart shape detectives!</p>
+      <p>Each shape has a name and a special look. Read the clues and try to match the shapes to the right basket.</p>
+      <hr>
+      ${tipsList}
+      <button onclick="this.parentElement.remove()" class="btn btn-warning mt-3">Close</button>
+    </div>
+  `;
+
+  document.body.appendChild(helpBox);
+};
