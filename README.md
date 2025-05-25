@@ -14,3 +14,7 @@ All dependencies are managed through npm and are installed automatically when yo
 
 #  Start the development server:
 Go to the right folder and run this command `npm run dev`.
+
+# You can use this account to test the website
+username: ngui@vub.be
+password: ngui25
